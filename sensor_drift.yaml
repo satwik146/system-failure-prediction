@@ -1,0 +1,24 @@
+name: sensor_drift
+description: "Simulates a stuck or drifting pressure sensor with periodic error spikes"
+
+steps:
+  - source_id: pressure_sensor_02
+    tag: pressure_bar
+    fault_type: drift
+    target: 0.0
+    duration: 50
+    delay_before: 0
+
+  - source_id: pressure_sensor_02
+    tag: pressure_bar
+    fault_type: spike
+    magnitude: 999.0
+    spike_duration: 3
+    duration: 10
+    delay_before: 55
+
+  - source_id: pressure_sensor_02
+    tag: pressure_bar
+    fault_type: stuck
+    duration: 30
+    delay_before: 70

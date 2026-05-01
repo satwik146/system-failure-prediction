@@ -1,0 +1,24 @@
+name: memory_leak
+description: "Simulates gradual RAM exhaustion and swap pressure typical of a memory leak"
+
+steps:
+  - source_id: app_server_01
+    tag: ram_used_mb
+    fault_type: drift
+    target: 7800
+    duration: 90
+    delay_before: 0
+
+  - source_id: app_server_01
+    tag: swap_used_mb
+    fault_type: drift
+    target: 3000
+    duration: 60
+    delay_before: 30
+
+  - source_id: app_server_01
+    tag: cpu_wait_pct
+    fault_type: drift
+    target: 45.0
+    duration: 40
+    delay_before: 50

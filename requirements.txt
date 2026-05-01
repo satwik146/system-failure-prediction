@@ -1,0 +1,22 @@
+# Core async runtime
+asyncio-mqtt==0.16.2       # async MQTT - zero thread overhead
+paho-mqtt==1.6.1           # MQTT protocol (used by asyncio-mqtt)
+pymodbus==3.6.6            # Modbus TCP/RTU - async capable
+pyserial==3.5              # Serial port access
+pyserial-asyncio==0.6      # Async serial - no polling thread
+watchdog==3.0.0            # OS-native file watching (inotify/kqueue) - no polling
+
+# Storage (ultra-light)
+aiosqlite==0.19.0          # Async SQLite - no separate process needed
+
+# API layer
+fastapi==0.110.0
+uvicorn[standard]==0.29.0  # ASGI server
+
+# Utilities
+pyyaml==6.0.1              # Config parsing
+python-dotenv==1.0.1       # Env vars
+ujson==5.9.0               # Faster JSON than stdlib
+
+# Optional: InfluxDB if scaling beyond SQLite
+# influxdb-client==1.40.0

@@ -1,0 +1,84 @@
+# iot-failure-predictor configuration
+# All ingestion sources are disabled by default — enable what you have
+
+app:
+  name: "IoT Failure Predictor"
+  version: "0.1.0"
+  log_level: "INFO"           # DEBUG | INFO | WARNING | ERROR
+  data_dir: "./data"          # local storage root
+
+# ─── Performance tuning ───────────────────────────────────────────────────────
+performance:
+  event_queue_maxsize: 512    # cap queue memory; drops oldest if full
+  batch_flush_interval: 5.0  # seconds between DB batch writes
+  batch_max_size: 64          # max events per DB batch
+  log_tail_chunk: 4096        # bytes read per log tail cycle
+  serial_read_timeout: 0.1    # seconds (keep low to stay responsive)
+
+# ─── MQTT ─────────────────────────────────────────────────────────────────────
+mqtt:
+  enabled: false
+  host: "localhost"
+  port: 1883
+  keepalive: 60
+  client_id: "iot-predictor"
+  # username: ""
+  # password: ""
+  topics:
+    - topic: "plant/+/sensors/#"
+      qos: 1
+    - topic: "machines/+/status"
+      qos: 0
+
+# ─── Modbus ───────────────────────────────────────────────────────────────────
+modbus:
+  enabled: false
+  devices:
+    - id: "pump_controller_01"
+      host: "192.168.1.100"
+      port: 502
+      unit_id: 1
+      poll_interval: 2.0      # seconds between polls
+      registers:
+        - name: "motor_rpm"
+          address: 0x0001
+          type: "holding"     # holding | input | coil | discrete
+        - name: "temperature_c"
+          address: 0x0002
+          type: "holding"
+        - name: "vibration_hz"
+          address: 0x0003
+          type: "input"
+
+# ─── Serial ───────────────────────────────────────────────────────────────────
+serial:
+  enabled: false
+  devices:
+    - id: "embedded_ctrl_01"
+      port: "/dev/ttyUSB0"    # Windows: "COM3"
+      baudrate: 9600
+      bytesize: 8
+      parity: "N"             # N | E | O
+      stopbits: 1
+      poll_interval: 1.0      # seconds
+      line_terminator: "\n"
+
+# ─── Log file tailing ─────────────────────────────────────────────────────────
+log_tailing:
+  enabled: true               # easiest to test — just needs a log file
+  files:
+
+    - id: "app_log"
+      path: "./data/sample.log"
+      encoding: "utf-8"
+      tag: "app"
+
+# ─── Analysis thresholds ──────────────────────────────────────────────────────
+analysis:
+  anomaly_zscore_threshold: 3.0
+  anomaly_window_size: 60     # data points to keep for rolling stats
+  severity_keywords:
+    critical: ["CRITICAL", "FATAL", "EMERG", "kernel panic", "segfault"]
+    error:    ["ERROR", "ERR", "FAIL", "failed", "exception"]
+    warning:  ["WARN", "WARNING", "timeout", "retry", "slow"]
+    info:     ["INFO", "OK", "success", "started", "stopped"]
