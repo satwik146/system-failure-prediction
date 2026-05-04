@@ -136,6 +136,7 @@ class AgentCore:
     def _extract_scalar(self, event: Event) -> float | None:
         """
         Pull a numeric scalar from an event value.
+        For log strings, extract the most likely data value (not timestamp/register).
         For complex dict payloads, take the first numeric field.
         """
         val = event.value
@@ -146,6 +147,24 @@ class AgentCore:
                 if isinstance(v, (int, float)):
                     return float(v)
         if isinstance(val, str):
+            # For log strings, extract a meaningful number (avoid timestamps)
+            import re
+            # Look for patterns like "value X" or "X Hz/°C/bar" etc
+            # Try these patterns in order of preference:
+            patterns = [
+                r':\s*(-?\d+\.?\d*)',        # "value: 45.3"
+                r'(\d+\.?\d*)\s*(?:Hz|°C|bar|rpm|mb|pct|ms)',  # "45.3 Hz"
+                r'(\d+\.?\d*)\s*(?:for|of|to)',                # "45.3 for"
+                r'-?\d+\.?\d*',              # Any number
+            ]
+            for pattern in patterns:
+                matches = re.findall(pattern, val)
+                if matches:
+                    try:
+                        return float(matches[-1])  # Take last match (usually most relevant)
+                    except (ValueError, IndexError):
+                        pass
+            # Last resort: parse whole string
             try:
                 return float(val.strip())
             except ValueError:

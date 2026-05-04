@@ -40,27 +40,17 @@ async def _push_loop():
         if not ws_manager._clients:
             continue
         try:
-            bus_stats = {}
-            if _bus:
-                s = getattr(_bus, 'stats', None)
-                bus_stats = s() if callable(s) else (s or {})
-
-            predictions = _agent.latest_results() if _agent else {}
-            health = _agent.system_health() if _agent else 100.0
-            planner = getattr(_agent, '_planner', None)
-            actions = getattr(planner, 'recent_actions', [])[-5:] if planner else []
-            sim = _simulator.status() if _simulator else {}
-
+            bus_stats = _bus.stats() if _bus and callable(getattr(_bus, 'stats', None)) else (_bus.stats if _bus else {})
             await ws_manager.broadcast({
                 "timestamp": time.time(),
                 "bus": bus_stats,
-                "system_health": health,
-                "predictions": predictions,
-                "simulator": sim,
-                "actions": actions,
+                "system_health": _agent.system_health() if _agent else 100.0,
+                "predictions": _agent.latest_results() if _agent else {},
+                "simulator": _simulator.status() if _simulator else {},
+                "actions": _agent._planner.recent_actions[-5:] if _agent else [],
             })
         except Exception as e:
-            log.error("WS push error: %s", e, exc_info=True)
+            log.debug("WS push error: %s", e)
 
 @asynccontextmanager
 async def _lifespan(app):
@@ -75,6 +65,7 @@ if (DASH / "static").exists():
 
 @app.get("/")
 async def root():
+    # Serve index.html from project root first, then dashboard folder
     for candidate in [
         Path(__file__).parent.parent / "index.html",
         DASH / "index.html",
@@ -88,12 +79,9 @@ async def health():
     return {"status": "ok", "time": time.time()}
 
 @app.get("/api/status")
-async def api_status():
+async def status():
     try:
-        bus_stats = {}
-        if _bus:
-            s = getattr(_bus, 'stats', None)
-            bus_stats = s() if callable(s) else (s or {})
+        bus_stats = _bus.stats() if _bus and callable(getattr(_bus, 'stats', None)) else (_bus.stats if _bus else {})
         return {
             "bus": bus_stats,
             "system_health": _agent.system_health() if _agent else 100.0,
@@ -101,7 +89,7 @@ async def api_status():
             "simulator": _simulator.status() if _simulator else {},
         }
     except Exception as e:
-        log.error("Status error: %s", e)
+        log.error("Status endpoint error: %s", e)
         return {"bus": {}, "system_health": 100.0, "predictions": {}, "simulator": {}}
 
 @app.get("/api/events")
@@ -128,10 +116,11 @@ async def reports():
 @app.get("/api/simulator/scenarios")
 async def list_scenarios():
     try:
-        if _simulator and hasattr(_simulator, 'runner'):
+        if _simulator and hasattr(_simulator, 'runner') and hasattr(_simulator.runner, 'list_scenarios'):
             return _simulator.runner.list_scenarios()
         return []
     except Exception as e:
+        log.error("List scenarios error: %s", e)
         return []
 
 @app.post("/api/simulator/run/{name}")
@@ -162,10 +151,11 @@ async def cancel():
 @app.get("/api/twin")
 async def twin():
     try:
-        if _simulator and hasattr(_simulator, 'twin'):
+        if _simulator and hasattr(_simulator, 'twin') and hasattr(_simulator.twin, 'snapshot'):
             return _simulator.twin.snapshot()
         return {}
     except Exception as e:
+        log.error("Twin snapshot error: %s", e)
         return {}
 
 @app.websocket("/ws")

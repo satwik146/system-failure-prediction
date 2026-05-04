@@ -5,348 +5,624 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>IoT Failure Predictor</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600&display=swap');
-:root {
-  --bg0:#080c10;--bg1:#0d1117;--bg2:#141b24;--bg3:#1c2633;
-  --border:#1e2d3d;--border2:#2a3f55;
-  --text:#c9d8e8;--muted:#4a6278;--dim:#2a3a4a;
-  --green:#00e676;--amber:#ffab00;--red:#ff3d57;--blue:#00b0ff;--cyan:#18ffff;
-  --mono:'Share Tech Mono',monospace;--body:'Barlow',sans-serif;--r:4px;
+:root{
+  --bg:#07090d;--bg1:#0c0f14;--bg2:#111620;--bg3:#181f2e;
+  --border:#1a2236;--border2:#243047;
+  --text:#d4e2f4;--muted:#3d5270;--dim:#1e2d42;
+  --green:#00d68f;--amber:#f5a623;--red:#ff4757;--blue:#2f86ff;--cyan:#00d4ff;--purple:#a78bfa;
+  --mono:'JetBrains Mono',monospace;--body:'DM Sans',sans-serif;
+  --r:6px;--r2:10px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg0);color:var(--text);font-family:var(--body);font-size:13px;font-weight:300;line-height:1.5;min-height:100vh;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px)}
-header{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:48px;background:var(--bg1);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
-.logo{font-family:var(--mono);font-size:13px;letter-spacing:2px;color:var(--cyan);text-transform:uppercase}
-.logo span{color:var(--muted)}
-.hdr-r{display:flex;gap:24px;align-items:center}
-#conn-status{font-family:var(--mono);font-size:11px;letter-spacing:1px;display:flex;align-items:center;gap:6px}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
-.dot.live{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:13px;font-weight:300}
+
+/* scanline overlay */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.03) 3px,rgba(0,0,0,.03) 4px)}
+
+/* ── HEADER ── */
+header{height:52px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;background:var(--bg1);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:100;gap:16px}
+.logo{font-family:var(--mono);font-size:12px;letter-spacing:3px;color:var(--cyan);
+  text-transform:uppercase;white-space:nowrap}
+.logo em{color:var(--muted);font-style:normal}
+.hdr-mid{flex:1;display:flex;justify-content:center;gap:24px}
+.hdr-stat{text-align:center}
+.hdr-stat .v{font-family:var(--mono);font-size:18px;font-weight:600;line-height:1}
+.hdr-stat .l{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.hdr-r{display:flex;align-items:center;gap:16px;white-space:nowrap}
+#conn-pill{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;
+  letter-spacing:1px;padding:4px 10px;border-radius:20px;border:1px solid var(--border2);
+  background:var(--bg2);transition:all .3s}
+#conn-pill.live{border-color:rgba(0,214,143,.4);background:rgba(0,214,143,.08);color:var(--green)}
+#conn-pill.offline{border-color:rgba(255,71,87,.3);background:rgba(255,71,87,.06);color:var(--red)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.live .dot{animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 #clock{font-family:var(--mono);font-size:11px;color:var(--muted)}
-.layout{display:grid;grid-template-columns:210px 1fr 270px;height:calc(100vh - 48px);overflow:hidden}
-.sidebar{background:var(--bg1);border-right:1px solid var(--border);overflow-y:auto;padding:14px 0}
-.ss{padding:0 14px 14px}
-.slabel{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
-.ring-wrap{display:flex;flex-direction:column;align-items:center;padding:6px 0 14px}
-#health-arc{width:110px;height:110px}
-.hnum{font-family:var(--mono);font-size:30px;margin-top:-64px;text-align:center;position:relative;z-index:1}
-.hlabel{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:3px}
-.src-list{display:flex;flex-direction:column;gap:4px}
-.src-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:7px 9px;cursor:pointer;transition:border-color .15s}
-.src-item:hover,.src-item.active{border-color:var(--cyan)}
-.src-item.anom{border-color:var(--red)}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:200px 1fr 280px;height:calc(100vh - 52px);overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--bg1);border-right:1px solid var(--border);
+  overflow-y:auto;padding:16px 12px;display:flex;flex-direction:column;gap:16px}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.sec-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--muted);
+  text-transform:uppercase;margin-bottom:8px}
+
+/* health ring */
+.ring-wrap{display:flex;flex-direction:column;align-items:center;padding:4px 0 8px}
+#health-svg{width:100px;height:100px}
+.hnum{font-family:var(--mono);font-size:28px;font-weight:600;
+  margin-top:-60px;text-align:center;position:relative;z-index:1}
+.hlabel{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:2px}
+
+/* source list */
+.src-list{display:flex;flex-direction:column;gap:5px}
+.src-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:8px 10px;cursor:pointer;transition:border-color .15s,background .15s}
+.src-item:hover{background:var(--bg3)}
+.src-item.active{border-color:var(--cyan);background:rgba(0,212,255,.05)}
+.src-item.anom{border-color:rgba(255,71,87,.5)}
+.src-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
 .src-name{font-family:var(--mono);font-size:11px;color:var(--cyan)}
-.src-meta{font-size:10px;color:var(--muted);margin-top:2px}
-.sbadge{float:right;font-size:9px;padding:1px 5px;border-radius:2px;font-family:var(--mono)}
-.bok{background:rgba(0,230,118,.15);color:var(--green)}
-.bwarn{background:rgba(255,171,0,.15);color:var(--amber)}
-.bcrit{background:rgba(255,61,87,.15);color:var(--red)}
-.main{overflow-y:auto;background:var(--bg0)}
+.sbadge{font-size:9px;padding:1px 6px;border-radius:3px;font-family:var(--mono)}
+.bok{background:rgba(0,214,143,.15);color:var(--green)}
+.bwarn{background:rgba(245,166,35,.15);color:var(--amber)}
+.bcrit{background:rgba(255,71,87,.15);color:var(--red)}
+.src-bar-bg{height:3px;background:var(--border);border-radius:2px;margin-top:5px}
+.src-bar{height:3px;border-radius:2px;transition:width .5s ease,background .3s}
+.src-meta{font-size:10px;color:var(--muted);margin-top:3px}
+
+/* bus stats */
+.bus-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.bus-cell{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:6px 8px;text-align:center}
+.bus-v{font-family:var(--mono);font-size:14px;font-weight:600}
+.bus-l{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+
+/* ── MAIN ── */
+.main{overflow-y:auto;overflow-x:hidden;background:var(--bg)}
+.main::-webkit-scrollbar{width:3px}
+.main::-webkit-scrollbar-thumb{background:var(--border2)}
 .main-inner{padding:14px;display:flex;flex-direction:column;gap:10px}
-.card{background:var(--bg1);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.card-h{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;border-bottom:1px solid var(--border);background:var(--bg2)}
-.ctitle{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
-.card-b{padding:10px 12px}
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:9px 11px}
-.kpi-l{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
-.kpi-v{font-family:var(--mono);font-size:20px;margin-top:2px}
-.kpi-s{font-size:10px;color:var(--muted)}
-.chart-w{position:relative;height:150px}
-#event-log{height:170px;overflow-y:auto;font-family:var(--mono);font-size:11px;line-height:1.8;background:var(--bg0);border-radius:var(--r);padding:7px}
-.ll{display:flex;gap:8px;border-bottom:1px solid rgba(255,255,255,.03);padding:1px 0}
-.lts{color:var(--dim);flex-shrink:0;width:76px}
-.lsrc{color:var(--cyan);flex-shrink:0;width:86px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lmsg{color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* anomaly banner */
+#anom-banner{display:none;padding:8px 14px;border-radius:var(--r);
+  background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.35);
+  font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:.5px;
+  animation:pulse-border 1s ease-in-out infinite}
+@keyframes pulse-border{0%,100%{border-color:rgba(255,71,87,.3)}50%{border-color:rgba(255,71,87,.8)}}
+
+/* cards */
+.card{background:var(--bg1);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.card-h{display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;border-bottom:1px solid var(--border);background:var(--bg2)}
+.ctitle{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--muted)}
+.card-b{padding:12px 14px}
+
+/* charts */
+.chart-w{position:relative;height:140px}
+
+/* event log */
+#event-log{height:180px;overflow-y:auto;font-family:var(--mono);font-size:11px;
+  line-height:1.9;background:var(--bg);border-radius:var(--r);padding:8px}
+#event-log::-webkit-scrollbar{width:3px}
+#event-log::-webkit-scrollbar-thumb{background:var(--border2)}
+.ll{display:flex;gap:8px;border-bottom:1px solid rgba(255,255,255,.025);padding:1px 0;
+  animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.lts{color:var(--dim);flex-shrink:0;width:72px}
+.lsrc{flex-shrink:0;width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--cyan)}
+.lmsg{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
 .sv-warning .lmsg,.sv-warning .lsrc{color:var(--amber)}
 .sv-error .lmsg,.sv-error .lsrc{color:var(--red)}
-.sv-critical .lmsg,.sv-critical .lsrc{color:var(--red);font-weight:600}
-.right{background:var(--bg1);border-left:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
-.rp{border-bottom:1px solid var(--border);padding:12px;flex-shrink:0}
-.rtitle{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
-.sbtn{width:100%;padding:7px;margin-bottom:5px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer;border-radius:var(--r);text-align:left;transition:border-color .15s,background .15s}
-.sbtn:hover{border-color:var(--cyan);background:var(--bg3)}
-.sbtn.danger:hover{border-color:var(--red)}
-.sbtn .i{color:var(--amber);margin-right:5px}
-.sbtn.danger .i{color:var(--red)}
+.sv-critical .lmsg{color:var(--red);font-weight:600}
+.sv-critical .lsrc{color:var(--red)}
+
+/* ── RIGHT PANEL ── */
+.right{background:var(--bg1);border-left:1px solid var(--border);
+  overflow-y:auto;display:flex;flex-direction:column}
+.right::-webkit-scrollbar{width:3px}
+.right::-webkit-scrollbar-thumb{background:var(--border2)}
+.rp{border-bottom:1px solid var(--border);padding:14px;flex-shrink:0}
+.rtitle{font-family:var(--mono);font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+
+/* sim buttons */
+.scen-grid{display:grid;grid-template-columns:1fr;gap:5px;margin-bottom:8px}
+.sbtn{width:100%;padding:8px 10px;background:var(--bg2);border:1px solid var(--border2);
+  color:var(--text);font-family:var(--mono);font-size:10px;letter-spacing:.5px;
+  cursor:pointer;border-radius:var(--r);text-align:left;transition:all .15s;display:flex;align-items:center;gap:8px}
+.sbtn:hover{border-color:var(--cyan);background:rgba(0,212,255,.06);color:var(--cyan)}
+.sbtn.danger:hover{border-color:var(--red);color:var(--red);background:rgba(255,71,87,.06)}
+.sbtn .icon{font-size:12px;opacity:.7}
+.sbtn:active{transform:scale(.98)}
+
+/* inject form */
 .inj-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px}
-select,input[type=text],input[type=number]{width:100%;background:var(--bg0);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:5px 7px;border-radius:var(--r)}
+select,input[type=text],input[type=number]{
+  width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);
+  font-family:var(--mono);font-size:10px;padding:6px 8px;border-radius:var(--r);
+  transition:border-color .15s}
 select:focus,input:focus{outline:none;border-color:var(--cyan)}
-.rcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:9px;margin-bottom:7px}
+#fault-lbl{font-family:var(--mono);font-size:10px;color:var(--muted);
+  margin-top:6px;min-height:16px}
+#fault-lbl.active{color:var(--amber)}
+
+/* agent reports */
+.rcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:10px;margin-bottom:7px;animation:fadeIn .3s ease}
 .rc-src{font-family:var(--mono);font-size:10px;color:var(--cyan);margin-bottom:3px}
-.rc-cause{font-size:12px;color:var(--text);margin-bottom:5px}
-.rc-conf{font-family:var(--mono);font-size:10px;color:var(--amber)}
-.rc-acts{margin-top:7px;padding-left:11px}
-.rc-acts li{font-size:11px;color:var(--muted);margin-bottom:2px}
-.aitem{display:flex;gap:7px;align-items:flex-start;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px}
-.aicon{font-family:var(--mono);font-size:9px;padding:1px 5px;border-radius:2px;flex-shrink:0}
-.a-log{background:rgba(0,230,118,.1);color:var(--green)}
-.a-alert{background:rgba(255,171,0,.1);color:var(--amber)}
-.a-report{background:rgba(0,176,255,.1);color:var(--blue)}
-.a-shutdown{background:rgba(255,61,87,.1);color:var(--red)}
-.atxt{color:var(--muted);flex:1;font-size:10px}
-#anom-banner{display:none;padding:7px 12px;background:rgba(255,61,87,.12);border:1px solid rgba(255,61,87,.4);border-radius:var(--r);font-family:var(--mono);font-size:11px;color:var(--red);letter-spacing:1px;animation:blink 1s infinite}
-@keyframes blink{0%,100%{border-color:rgba(255,61,87,.4)}50%{border-color:rgba(255,61,87,.9)}}
+.rc-cause{font-size:12px;color:var(--text);margin-bottom:6px;line-height:1.4}
+.conf-bar-bg{height:4px;background:var(--border);border-radius:2px;margin-bottom:6px}
+.conf-bar{height:4px;border-radius:2px;background:var(--amber);transition:width .5s}
+.rc-conf{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:5px}
+.rc-acts{margin-top:5px;padding-left:12px;display:flex;flex-direction:column;gap:2px}
+.rc-acts li{font-size:11px;color:var(--muted)}
+
+/* action log */
+.aitem{display:flex;gap:7px;align-items:flex-start;padding:5px 0;
+  border-bottom:1px solid rgba(255,255,255,.03);animation:fadeIn .3s}
+.aicon{font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:3px;flex-shrink:0;margin-top:1px}
+.a-log{background:rgba(0,214,143,.1);color:var(--green)}
+.a-alert{background:rgba(245,166,35,.1);color:var(--amber)}
+.a-report{background:rgba(47,134,255,.1);color:var(--blue)}
+.a-shutdown{background:rgba(255,71,87,.1);color:var(--red)}
+.atxt{color:var(--muted);flex:1;font-size:10px;line-height:1.5}
+
+/* toast notifications */
+#toast-wrap{position:fixed;top:64px;right:16px;z-index:9999;
+  display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);
+  padding:8px 12px;font-family:var(--mono);font-size:11px;
+  animation:slideIn .25s ease forwards;max-width:260px}
+.toast.warn{border-color:rgba(245,166,35,.5);color:var(--amber)}
+.toast.err{border-color:rgba(255,71,87,.5);color:var(--red)}
+.toast.ok{border-color:rgba(0,214,143,.4);color:var(--green)}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+@keyframes slideOut{from{opacity:1}to{opacity:0;transform:translateX(20px)}}
 </style>
 </head>
 <body>
+
 <header>
-  <div class="logo">IoT<span>//</span>Failure<span>:</span>Predictor</div>
+  <div class="logo">IoT<em>//</em>Predictor</div>
+  <div class="hdr-mid">
+    <div class="hdr-stat">
+      <div class="v" id="kh" style="color:var(--green)">--</div>
+      <div class="l">Health</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="v" id="ks">0</div>
+      <div class="l">Sources</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="v" id="ka" style="color:var(--amber)">0</div>
+      <div class="l">Anomalies</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="v" id="kf" style="color:var(--red)">0</div>
+      <div class="l">Faults</div>
+    </div>
+  </div>
   <div class="hdr-r">
-    <div id="conn-status"><div class="dot" id="dot"></div><span id="ctxt">CONNECTING</span></div>
+    <div id="conn-pill" class="offline"><div class="dot"></div><span id="ctxt">OFFLINE</span></div>
     <div id="clock"></div>
   </div>
 </header>
+
 <div class="layout">
-  <aside class="sidebar">
-    <div class="ss">
-      <div class="slabel">System Integrity</div>
-      <div class="ring-wrap">
-        <svg id="health-arc" viewBox="0 0 110 110">
-          <circle cx="55" cy="55" r="46" fill="none" stroke="#1c2633" stroke-width="9"/>
-          <circle id="hcircle" cx="55" cy="55" r="46" fill="none" stroke="#00e676" stroke-width="9"
-            stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="0"
-            transform="rotate(-90 55 55)" style="transition:all .8s ease"/>
-        </svg>
-        <div class="hnum" id="hnum">--</div>
-        <div class="hlabel">HEALTH SCORE</div>
-      </div>
-    </div>
-    <div class="ss">
-      <div class="slabel">Sources</div>
-      <div class="src-list" id="src-list"><div class="src-item"><div class="src-name" style="color:var(--muted)">Waiting…</div></div></div>
-    </div>
-    <div class="ss" style="margin-top:6px">
-      <div class="slabel">Bus Stats</div>
-      <div style="font-family:var(--mono);font-size:11px;line-height:2;color:var(--muted)">
-        <div>QUEUED  <span id="bq" style="color:var(--text)">—</span></div>
-        <div>TOTAL   <span id="bt" style="color:var(--text)">—</span></div>
-        <div>DROPPED <span id="bd" style="color:var(--red)">—</span></div>
-      </div>
-    </div>
-  </aside>
 
-  <main class="main"><div class="main-inner">
-    <div id="anom-banner">⚠ ANOMALY — <span id="anom-detail"></span></div>
-    <div class="kpi-row">
-      <div class="kpi"><div class="kpi-l">Health</div><div class="kpi-v" id="kh" style="color:var(--green)">--</div><div class="kpi-s">/ 100</div></div>
-      <div class="kpi"><div class="kpi-l">Sources</div><div class="kpi-v" id="ks">0</div><div class="kpi-s">monitored</div></div>
-      <div class="kpi"><div class="kpi-l">Anomalies</div><div class="kpi-v" id="ka" style="color:var(--amber)">0</div><div class="kpi-s">active</div></div>
-      <div class="kpi"><div class="kpi-l">Faults</div><div class="kpi-v" id="kf" style="color:var(--red)">0</div><div class="kpi-s">injected</div></div>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div>
+    <div class="sec-label">System Integrity</div>
+    <div class="ring-wrap">
+      <svg id="health-svg" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="42" fill="none" stroke="#1a2236" stroke-width="8"/>
+        <circle id="hcircle" cx="50" cy="50" r="42" fill="none" stroke="#00d68f" stroke-width="8"
+          stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="0"
+          transform="rotate(-90 50 50)" style="transition:all .8s ease"/>
+      </svg>
+      <div class="hnum" id="hnum">--</div>
+      <div class="hlabel">HEALTH SCORE</div>
     </div>
-    <div class="card">
-      <div class="card-h"><span class="ctitle">Live Telemetry — <span id="chart-src">all sources</span></span><span style="font-family:var(--mono);font-size:10px;color:var(--muted)" id="chart-eta"></span></div>
-      <div class="card-b"><div class="chart-w"><canvas id="tel-chart"></canvas></div></div>
-    </div>
-    <div class="card">
-      <div class="card-h"><span class="ctitle">LSTM Forecast — next 20 steps (10 min each)</span></div>
-      <div class="card-b"><div class="chart-w"><canvas id="fore-chart"></canvas></div></div>
-    </div>
-    <div class="card">
-      <div class="card-h"><span class="ctitle">Event Log</span><span style="font-family:var(--mono);font-size:10px;color:var(--muted)" id="log-cnt">0 events</span></div>
-      <div style="padding:0"><div id="event-log"></div></div>
-    </div>
-  </div></main>
+  </div>
 
-  <aside class="right">
-    <div class="rp">
-      <div class="rtitle">Simulator</div>
-      <button class="sbtn" onclick="runScen('motor_overheat')"><span class="i">▶</span>Motor Overheat</button>
-      <button class="sbtn" onclick="runScen('memory_leak')"><span class="i">▶</span>Memory Leak</button>
-      <button class="sbtn" onclick="runScen('sensor_drift')"><span class="i">▶</span>Sensor Drift</button>
-      <div style="margin:9px 0 5px;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px">MANUAL INJECT</div>
-      <div class="inj-row">
-        <input type="text" id="inj-src" placeholder="source_id" value="pump_01"/>
-        <input type="text" id="inj-tag" placeholder="tag" value="temperature_c"/>
-      </div>
-      <div class="inj-row">
-        <select id="inj-type">
-          <option>spike</option><option>drift</option>
-          <option>oscillate</option><option>stuck</option><option>flood_errors</option>
-        </select>
-        <input type="number" id="inj-mag" placeholder="magnitude" value="50"/>
-      </div>
-      <button class="sbtn" onclick="manualInject()"><span class="i">⚡</span>Inject Fault</button>
-      <button class="sbtn danger" onclick="cancelAll()"><span class="i">✕</span>Cancel All</button>
-      <div style="margin-top:7px;font-family:var(--mono);font-size:10px;color:var(--muted)" id="fault-lbl">No active faults</div>
+  <div>
+    <div class="sec-label">Sources</div>
+    <div class="src-list" id="src-list">
+      <div class="src-item"><div class="src-name" style="color:var(--muted)">Waiting…</div></div>
     </div>
-    <div class="rp" style="flex:1;overflow-y:auto">
-      <div class="rtitle">Agent Reports</div>
-      <div id="agent-rpts"><div style="color:var(--muted);font-size:11px">Waiting for anomalies…</div></div>
+  </div>
+
+  <div>
+    <div class="sec-label">Message Bus</div>
+    <div class="bus-grid">
+      <div class="bus-cell"><div class="bus-v" id="bq">—</div><div class="bus-l">Queued</div></div>
+      <div class="bus-cell"><div class="bus-v" id="bt">—</div><div class="bus-l">Total</div></div>
+      <div class="bus-cell" style="grid-column:1/-1"><div class="bus-v" id="bd" style="color:var(--red)">—</div><div class="bus-l">Dropped</div></div>
     </div>
-    <div class="rp">
-      <div class="rtitle">Action Log</div>
-      <div id="act-log"><div style="color:var(--muted);font-size:11px">No actions yet</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main"><div class="main-inner">
+
+  <div id="anom-banner">⚠ ANOMALY DETECTED — <span id="anom-detail"></span></div>
+
+  <div class="card">
+    <div class="card-h">
+      <span class="ctitle">Live Telemetry — <span id="chart-src">no source</span></span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--muted)" id="chart-eta"></span>
     </div>
-  </aside>
+    <div class="card-b"><div class="chart-w"><canvas id="tel-chart"></canvas></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">
+      <span class="ctitle">LSTM Forecast — next 20 steps</span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--muted)">10 min / step</span>
+    </div>
+    <div class="card-b"><div class="chart-w"><canvas id="fore-chart"></canvas></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">
+      <span class="ctitle">Event Log</span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--muted)" id="log-cnt">0 events</span>
+    </div>
+    <div style="padding:0 2px 2px"><div id="event-log"></div></div>
+  </div>
+
+</div></main>
+
+<!-- RIGHT PANEL -->
+<aside class="right">
+
+  <div class="rp">
+    <div class="rtitle">Fault Simulator</div>
+    <div class="scen-grid">
+      <button class="sbtn" onclick="runScen('motor_overheat')"><span class="icon">🔥</span>Motor Overheat</button>
+      <button class="sbtn" onclick="runScen('memory_leak')"><span class="icon">💾</span>Memory Leak</button>
+      <button class="sbtn" onclick="runScen('sensor_drift')"><span class="icon">📡</span>Sensor Drift</button>
+    </div>
+
+    <div style="margin:10px 0 5px;font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px">MANUAL INJECT</div>
+    <div class="inj-row">
+      <input type="text" id="inj-src" placeholder="source_id" value="pump_01"/>
+      <input type="text" id="inj-tag" placeholder="tag" value="temperature_c"/>
+    </div>
+    <div class="inj-row">
+      <select id="inj-type">
+        <option>spike</option><option>drift</option>
+        <option>oscillate</option><option>stuck</option><option>flood_errors</option>
+      </select>
+      <input type="number" id="inj-mag" placeholder="magnitude" value="50"/>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:5px">
+      <button class="sbtn" onclick="manualInject()"><span class="icon">⚡</span>Inject</button>
+      <button class="sbtn danger" onclick="cancelAll()"><span class="icon">✕</span>Cancel All</button>
+    </div>
+    <div id="fault-lbl">No active faults</div>
+  </div>
+
+  <div class="rp" style="flex:1;overflow-y:auto">
+    <div class="rtitle">Agent Reports</div>
+    <div id="agent-rpts"><div style="color:var(--muted);font-size:11px;font-style:italic">Waiting for anomalies…</div></div>
+  </div>
+
+  <div class="rp">
+    <div class="rtitle">Action Log</div>
+    <div id="act-log"><div style="color:var(--muted);font-size:11px;font-style:italic">No actions yet</div></div>
+  </div>
+
+</aside>
 </div>
 
+<div id="toast-wrap"></div>
+
 <script>
-const CIRCUM = 289;
-let selSrc = null, telBuf = {}, ws, ping;
+const CIRCUM = 264;
+let selSrc = null, telBuf = {}, ws, ping, reconnectTimer;
+let prevHealth = null, prevAnomalies = 0;
 
-function clock() { document.getElementById('clock').textContent = new Date().toISOString().replace('T',' ').slice(0,19)+' UTC'; }
-setInterval(clock, 1000); clock();
+// ── Clock ──────────────────────────────────────────────────────────────────
+function tick_clock(){ document.getElementById('clock').textContent = new Date().toISOString().replace('T',' ').slice(0,19)+' UTC'; }
+setInterval(tick_clock, 1000); tick_clock();
 
-function mkChart(id, color) {
-  const base = { responsive:true, maintainAspectRatio:false, animation:false,
-    plugins:{ legend:{display:false}, tooltip:{ backgroundColor:'#141b24', borderColor:'#1e2d3d', borderWidth:1,
-      titleColor:'#4a6278', bodyColor:'#c9d8e8',
-      titleFont:{family:'Share Tech Mono',size:10}, bodyFont:{family:'Share Tech Mono',size:11} }},
-    scales:{ x:{ticks:{color:'#4a6278',font:{family:'Share Tech Mono',size:9},maxTicksLimit:8},grid:{color:'#1c2633'}},
-             y:{ticks:{color:'#4a6278',font:{family:'Share Tech Mono',size:9}},grid:{color:'#1c2633'}} }
+// ── Toast ──────────────────────────────────────────────────────────────────
+function toast(msg, type='ok'){
+  const w = document.getElementById('toast-wrap');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  w.appendChild(t);
+  setTimeout(()=>{ t.style.animation='slideOut .3s ease forwards'; setTimeout(()=>t.remove(),300); }, 3500);
+}
+
+// ── Charts ─────────────────────────────────────────────────────────────────
+function mkChart(id, color, fill=true){
+  const opts = {
+    responsive:true, maintainAspectRatio:false, animation:false,
+    plugins:{ legend:{display:false}, tooltip:{
+      backgroundColor:'#111620',borderColor:'#243047',borderWidth:1,
+      titleColor:'#3d5270',bodyColor:'#d4e2f4',
+      titleFont:{family:'JetBrains Mono',size:10},bodyFont:{family:'JetBrains Mono',size:11},
+      padding:8,cornerRadius:4
+    }},
+    scales:{
+      x:{ticks:{color:'#3d5270',font:{family:'JetBrains Mono',size:9},maxTicksLimit:7},
+         grid:{color:'rgba(26,34,54,.8)'},border:{display:false}},
+      y:{ticks:{color:'#3d5270',font:{family:'JetBrains Mono',size:9}},
+         grid:{color:'rgba(26,34,54,.8)'},border:{display:false}}
+    }
   };
-  return new Chart(document.getElementById(id).getContext('2d'), {
-    type:'line', options:base,
-    data:{ labels:[], datasets:[{label:'val',data:[],borderColor:color,backgroundColor:color+'18',borderWidth:1.5,pointRadius:0,fill:true,tension:0.3}] }
+  return new Chart(document.getElementById(id).getContext('2d'),{
+    type:'line', options:opts,
+    data:{ labels:[], datasets:[{
+      data:[], borderColor:color,
+      backgroundColor: fill ? color+'14' : 'transparent',
+      borderWidth:1.5, pointRadius:0, fill:fill, tension:0.35
+    }]}
   });
 }
 
-const telC  = mkChart('tel-chart',  '#00b0ff');
-const foreC = mkChart('fore-chart', '#00e676');
-foreC.data.datasets.push({label:'lo',data:[],borderColor:'#ffffff08',backgroundColor:'#00e67608',borderWidth:0,pointRadius:0,fill:'-1',tension:0.3});
-foreC.data.datasets.push({label:'hi',data:[],borderColor:'#ffffff08',backgroundColor:'#00e67608',borderWidth:0,pointRadius:0,fill:1,tension:0.3});
+const telC = mkChart('tel-chart','#2f86ff');
+const foreC = mkChart('fore-chart','#00d68f');
+// confidence band datasets
+foreC.data.datasets.push({data:[],borderColor:'transparent',backgroundColor:'rgba(0,214,143,.06)',borderWidth:0,pointRadius:0,fill:'-1',tension:0.35});
+foreC.data.datasets.push({data:[],borderColor:'transparent',backgroundColor:'rgba(0,214,143,.06)',borderWidth:0,pointRadius:0,fill:1,tension:0.35});
+foreC.update('none');
 
-function connect() {
-  ws = new WebSocket(`ws://${location.host}/ws`);
-  ws.onopen  = () => { setConn(true); clearInterval(ping); ping = setInterval(()=>ws.readyState===1&&ws.send('p'),5000); };
-  ws.onclose = () => { setConn(false); setTimeout(connect, 3000); };
-  ws.onmessage = e => tick(JSON.parse(e.data));
+// ── WebSocket ──────────────────────────────────────────────────────────────
+function connect(){
+  clearTimeout(reconnectTimer);
+  try{ ws = new WebSocket(`ws://${location.host}/ws`); }
+  catch(e){ scheduleReconnect(); return; }
+
+  ws.onopen = ()=>{
+    setConn(true);
+    toast('Connected to server','ok');
+    clearInterval(ping);
+    ping = setInterval(()=>{ if(ws.readyState===1) ws.send('p'); }, 5000);
+  };
+  ws.onclose = ()=>{ setConn(false); scheduleReconnect(); };
+  ws.onerror = ()=>{ setConn(false); };
+  ws.onmessage = e=>{ try{ handleTick(JSON.parse(e.data)); }catch(_){} };
 }
-function setConn(ok) {
-  document.getElementById('dot').className = 'dot'+(ok?' live':'');
+
+function scheduleReconnect(){
+  setConn(false);
+  reconnectTimer = setTimeout(connect, 3000);
+}
+
+function setConn(ok){
+  const pill = document.getElementById('conn-pill');
+  pill.className = 'conn-pill '+(ok?'live':'offline');  // note: id not class
+  pill.id = 'conn-pill';
   document.getElementById('ctxt').textContent = ok?'LIVE':'OFFLINE';
 }
 
-function tick(d) {
-  if (d.type !== 'tick') return;
-  const bs = d.bus_stats||{};
+// ── Data handling ──────────────────────────────────────────────────────────
+// Actual WS message shape (from /api/status):
+// { bus:{queued,total,dropped}, system_health, predictions:{},
+//   simulator:{ twin_sources, active_injections, scenarios_available,
+//               latest_states:{ src_id:{ timestamp, severity, metrics:{tag:val} } } } }
+
+function handleTick(d){
+  // bus stats
+  const bs = d.bus||{};
   document.getElementById('bq').textContent = bs.queued??'—';
   document.getElementById('bt').textContent = bs.total??'—';
   document.getElementById('bd').textContent = bs.dropped??'—';
+
   setHealth(Math.round(d.system_health??100));
-  updateSrcs(d.agent||{}, d.simulator);
-  updateFore(d.agent||{});
-  checkAnom(d.agent||{});
-  if (d.actions?.length) updateActs(d.actions);
+
+  // Build normalised source map from simulator.latest_states + predictions
+  const states = d.simulator?.latest_states || {};
+  const preds  = d.predictions || {};
+  const sources = {};
+
+  for(const [sid, st] of Object.entries(states)){
+    const metrics = st.metrics || {};
+    const firstVal = Object.values(metrics)[0];
+    const pred = preds[sid] || {};
+    // detect anomaly: any metric value that looks extreme vs a simple threshold
+    const isAnom = Object.values(metrics).some(v => Math.abs(v) > 900);
+    sources[sid] = {
+      current_value: firstVal,
+      current_tag:   Object.keys(metrics)[0] || '',
+      metrics,
+      health_score:  pred.health_score ?? (isAnom ? 20 : 90),
+      is_anomaly:    pred.is_anomaly   ?? isAnom,
+      anomaly_reason:pred.anomaly_reason ?? (isAnom ? 'extreme value' : ''),
+      forecast:      pred.forecast     ?? [],
+      minutes_to_event: pred.minutes_to_event ?? null,
+      buffer_fill:   0,
+    };
+  }
+
+  // Also pull in any pure prediction sources not in simulator states
+  for(const [sid, pred] of Object.entries(preds)){
+    if(!sources[sid]) sources[sid] = { ...pred, metrics:{} };
+  }
+
+  updateSrcs(sources, d.simulator);
+  updateFore(sources);
+  checkAnom(sources);
+  if(d.actions?.length) updateActs(d.actions);
 }
 
-function setHealth(h) {
+function setHealth(h){
   document.getElementById('hnum').textContent = h;
-  document.getElementById('kh').textContent   = h;
-  const col = h>60?'#00e676':h>30?'#ffab00':'#ff3d57';
-  const c   = document.getElementById('hcircle');
+  document.getElementById('kh').textContent = h;
+  document.getElementById('kh').style.color = h>60?'var(--green)':h>30?'var(--amber)':'var(--red)';
+  const c = document.getElementById('hcircle');
   c.style.strokeDashoffset = CIRCUM*(1-h/100);
-  c.style.stroke = col;
-  document.getElementById('kh').style.color = col;
+  c.style.stroke = h>60?'#00d68f':h>30?'#f5a623':'#ff4757';
+  if(prevHealth !== null && h < prevHealth - 15) toast(`Health dropped to ${h}`, 'warn');
+  prevHealth = h;
 }
 
-function updateSrcs(results, sim) {
-  const list = document.getElementById('src-list');
-  const keys = Object.keys(results);
+function updateSrcs(sources, sim){
+  const keys = Object.keys(sources);
   document.getElementById('ks').textContent = keys.length;
-  document.getElementById('ka').textContent = Object.values(results).filter(r=>r.is_anomaly).length;
-  const faults = sim?.active_faults?.filter(f=>f.running).length||0;
+  const anomCount = Object.values(sources).filter(r=>r.is_anomaly).length;
+  document.getElementById('ka').textContent = anomCount;
+  if(anomCount > prevAnomalies) toast(`Anomaly on ${Object.entries(sources).find(([,r])=>r.is_anomaly)?.[0]||'?'}`, 'err');
+  prevAnomalies = anomCount;
+
+  const faults = sim?.active_injections || 0;
   document.getElementById('kf').textContent = faults;
-  document.getElementById('fault-lbl').textContent = faults ? `${faults} fault(s) running`:'No active faults';
-  if (!keys.length) return;
+  const fl = document.getElementById('fault-lbl');
+  fl.textContent = faults ? `${faults} fault(s) running` : 'No active faults';
+  fl.className = faults ? 'active' : '';
+
+  if(!keys.length) return;
+  const list = document.getElementById('src-list');
   list.innerHTML = '';
-  for (const [sid, r] of Object.entries(results)) {
-    const h = r.health_score??100;
+  for(const [sid, r] of Object.entries(sources)){
+    const h = r.health_score??90;
     const bc = h>60?'bok':h>30?'bwarn':'bcrit', bl = h>60?'OK':h>30?'WARN':'CRIT';
-    const d = document.createElement('div');
-    d.className = 'src-item'+(r.is_anomaly?' anom':'')+(sid===selSrc?' active':'');
-    d.innerHTML = `<span class="sbadge ${bc}">${bl}</span><div class="src-name">${sid}</div><div class="src-meta">health ${Math.round(h)}/100 · buf ${Math.round((r.buffer_fill||0)*100)}%</div>`;
-    d.onclick = () => { selSrc = sid; updateSrcs(results, sim); };
-    list.appendChild(d);
-    if (!telBuf[sid]) telBuf[sid] = [];
-    if (r.current_value !== undefined) {
-      telBuf[sid].push({t: new Date().toLocaleTimeString(), v: r.current_value});
-      if (telBuf[sid].length > 60) telBuf[sid].shift();
+    const barCol = h>60?'var(--green)':h>30?'var(--amber)':'var(--red)';
+    // show all metric values
+    const metricStr = Object.entries(r.metrics||{}).map(([k,v])=>`${k}: ${typeof v==='number'?v.toFixed(1):v}`).join(' · ') || '—';
+    const el = document.createElement('div');
+    el.className = 'src-item'+(r.is_anomaly?' anom':'')+(sid===selSrc?' active':'');
+    el.innerHTML = `
+      <div class="src-top"><span class="src-name">${sid}</span><span class="sbadge ${bc}">${bl}</span></div>
+      <div class="src-bar-bg"><div class="src-bar" style="width:${Math.round(h)}%;background:${barCol}"></div></div>
+      <div class="src-meta">${metricStr}</div>`;
+    el.onclick = ()=>{ selSrc = sid; updateSrcs(sources, sim); };
+    list.appendChild(el);
+
+    if(!telBuf[sid]) telBuf[sid] = [];
+    if(r.current_value !== undefined && r.current_value !== null){
+      telBuf[sid].push({
+        t: new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'}),
+        v: r.current_value
+      });
+      if(telBuf[sid].length > 80) telBuf[sid].shift();
     }
   }
+
   const src = selSrc || keys[0];
-  if (src && telBuf[src]) {
-    document.getElementById('chart-src').textContent = src;
+  if(src && telBuf[src] && telBuf[src].length){
+    const tag = sources[src]?.current_tag || src;
+    document.getElementById('chart-src').textContent = `${src} · ${tag}`;
     telC.data.labels = telBuf[src].map(b=>b.t);
     telC.data.datasets[0].data = telBuf[src].map(b=>b.v);
     telC.update('none');
   }
 }
 
-function updateFore(results) {
-  const src = selSrc || Object.keys(results)[0];
-  if (!src || !results[src]) return;
-  const r = results[src], fc = r.forecast||[];
-  if (!fc.length) return;
+function updateFore(sources){
+  const src = selSrc || Object.keys(sources)[0];
+  if(!src || !sources[src]) return;
+  const fc = sources[src].forecast || [];
+  if(!fc.length) return;
   const mean = fc.reduce((a,b)=>a+b,0)/fc.length;
-  const std  = Math.sqrt(fc.reduce((a,b)=>a+(b-mean)**2,0)/fc.length);
+  const std = Math.sqrt(fc.reduce((a,b)=>a+(b-mean)**2,0)/fc.length)||0;
   foreC.data.labels = fc.map((_,i)=>`+${(i+1)*10}m`);
   foreC.data.datasets[0].data = fc;
   foreC.data.datasets[1].data = fc.map(v=>v-1.5*std);
   foreC.data.datasets[2].data = fc.map(v=>v+1.5*std);
   foreC.update('none');
-  document.getElementById('chart-eta').textContent = r.minutes_to_event ? `ETA ${r.minutes_to_event}min`:'';
+  const eta = sources[src].minutes_to_event;
+  document.getElementById('chart-eta').textContent = eta ? `ETA ${eta} min` : '';
 }
 
-function checkAnom(results) {
-  const anoms = Object.entries(results).filter(([,r])=>r.is_anomaly);
+function checkAnom(sources){
+  const anoms = Object.entries(sources).filter(([,r])=>r.is_anomaly);
   const b = document.getElementById('anom-banner');
-  if (anoms.length) {
+  if(anoms.length){
     b.style.display = 'block';
-    document.getElementById('anom-detail').textContent = anoms.map(([s,r])=>`${s}: ${r.anomaly_reason||'anomaly'}`).join(' | ');
+    document.getElementById('anom-detail').textContent = anoms.map(([s,r])=>`${s}: ${r.anomaly_reason||'anomaly'}`).join(' · ');
     fetchRpts();
-  } else b.style.display = 'none';
+  } else b.style.display='none';
 }
 
-async function fetchRpts() {
-  try {
+async function fetchRpts(){
+  try{
     const data = await (await fetch('/api/reports')).json();
     const el = document.getElementById('agent-rpts');
-    if (!data.length) return;
-    el.innerHTML = data.slice(0,3).map(r => {
+    if(!data.length){ el.innerHTML='<div style="color:var(--muted);font-size:11px;font-style:italic">No reports yet</div>'; return; }
+    el.innerHTML = data.slice(0,3).map(r=>{
       const rc = r.root_cause||{};
+      const conf = Math.round((rc.confidence||0)*100);
       return `<div class="rcard">
         <div class="rc-src">${r.source_id||'—'}</div>
         <div class="rc-cause">${rc.probable_cause||'—'}</div>
-        <div class="rc-conf">confidence ${Math.round((rc.confidence||0)*100)}%</div>
+        <div class="conf-bar-bg"><div class="conf-bar" style="width:${conf}%"></div></div>
+        <div class="rc-conf">Confidence: ${conf}%</div>
         <ul class="rc-acts">${(rc.recommended||[]).slice(0,3).map(a=>`<li>${a}</li>`).join('')}</ul>
       </div>`;
     }).join('');
-  } catch(e) {}
+  } catch(e){}
 }
 
-function updateActs(actions) {
+function updateActs(actions){
   const cls = {log_event:'a-log',send_alert:'a-alert',write_report:'a-report',shutdown_signal:'a-shutdown'};
   document.getElementById('act-log').innerHTML = [...actions].reverse().slice(0,8).map(a=>
-    `<div class="aitem"><span class="aicon ${cls[a.name]||'a-log'}">${a.name.replace('_',' ')}</span><span class="atxt">${a.source_id} — ${a.reason||''}</span></div>`
+    `<div class="aitem"><span class="aicon ${cls[a.name]||'a-log'}">${a.name.replace(/_/g,' ')}</span><span class="atxt">${a.source_id} — ${a.reason||''}</span></div>`
   ).join('');
 }
 
-async function pollEvents() {
-  try {
-    const rows = await (await fetch('/api/events?limit=30')).json();
+// ── Event log polling ──────────────────────────────────────────────────────
+async function pollEvents(){
+  try{
+    const rows = await (await fetch('/api/events?limit=40')).json();
     document.getElementById('log-cnt').textContent = `${rows.length} events`;
-    document.getElementById('event-log').innerHTML = rows.slice().reverse().map(r => {
-      const ts = new Date(r.timestamp*1000).toLocaleTimeString();
+    document.getElementById('event-log').innerHTML = rows.slice().reverse().map(r=>{
+      const ts = new Date(r.timestamp*1000).toLocaleTimeString('en',{hour12:false});
       const val = typeof r.value==='object'?JSON.stringify(r.value):r.value;
       return `<div class="ll sv-${r.severity||'info'}"><span class="lts">${ts}</span><span class="lsrc">${r.source_id}</span><span class="lmsg">${val}</span></div>`;
     }).join('');
-  } catch(e) {}
+  } catch(e){}
 }
 setInterval(pollEvents, 3000);
+pollEvents();
 
-async function runScen(n) { await fetch(`/api/simulator/run/${n}`,{method:'POST'}); }
-async function manualInject() {
-  await fetch('/api/simulator/inject',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({source_id:document.getElementById('inj-src').value, tag:document.getElementById('inj-tag').value,
-      fault_type:document.getElementById('inj-type').value, magnitude:parseFloat(document.getElementById('inj-mag').value)||50, duration:30})});
+// ── Simulator actions ──────────────────────────────────────────────────────
+async function runScen(n){
+  try{
+    await fetch(`/api/simulator/run/${n}`,{method:'POST'});
+    toast(`Scenario: ${n.replace(/_/g,' ')} started`,'warn');
+  } catch(e){ toast('Server unreachable','err'); }
 }
-async function cancelAll() { await fetch('/api/simulator/cancel',{method:'POST'}); }
 
+async function manualInject(){
+  try{
+    await fetch('/api/simulator/inject',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        source_id: document.getElementById('inj-src').value,
+        tag: document.getElementById('inj-tag').value,
+        fault_type: document.getElementById('inj-type').value,
+        magnitude: parseFloat(document.getElementById('inj-mag').value)||50,
+        duration: 30
+      })});
+    toast('Fault injected','warn');
+  } catch(e){ toast('Inject failed','err'); }
+}
+
+async function cancelAll(){
+  try{
+    await fetch('/api/simulator/cancel',{method:'POST'});
+    toast('All faults cancelled','ok');
+  } catch(e){ toast('Cancel failed','err'); }
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
 connect();
 setTimeout(fetchRpts, 2000);
 </script>
