@@ -35,37 +35,54 @@ class _WSManager:
 ws_manager = _WSManager()
 
 async def _push_loop():
-    while True:
-        await asyncio.sleep(2)
-        if not ws_manager._clients:
-            continue
-        try:
-            bus_stats = {}
-            if _bus:
-                s = getattr(_bus, 'stats', None)
-                bus_stats = s() if callable(s) else (s or {})
+    try:
+        while True:
+            await asyncio.sleep(2)
+            if not ws_manager._clients:
+                continue
+            try:
+                bus_stats = {}
+                if _bus:
+                    s = getattr(_bus, 'stats', None)
+                    bus_stats = s() if callable(s) else (s or {})
 
-            predictions = _agent.latest_results() if _agent else {}
-            health = _agent.system_health() if _agent else 100.0
-            planner = getattr(_agent, '_planner', None)
-            actions = getattr(planner, 'recent_actions', [])[-5:] if planner else []
-            sim = _simulator.status() if _simulator else {}
+                predictions = _agent.latest_results() if _agent else {}
+                health = _agent.system_health() if _agent else 100.0
+                planner = getattr(_agent, '_planner', None)
+                actions = getattr(planner, 'recent_actions', [])[-5:] if planner else []
+                sim = _simulator.status() if _simulator else {}
 
-            await ws_manager.broadcast({
-                "timestamp": time.time(),
-                "bus": bus_stats,
-                "system_health": health,
-                "predictions": predictions,
-                "simulator": sim,
-                "actions": actions,
-            })
-        except Exception as e:
-            log.error("WS push error: %s", e, exc_info=True)
+                msg = {
+                    "timestamp": time.time(),
+                    "bus": bus_stats,
+                    "system_health": health,
+                    "buffer_fill": _agent._get_buffer_fill() if _agent else {},
+                    "predictions": predictions,
+                    "simulator": sim,
+                    "actions": actions,
+                }
+                await ws_manager.broadcast(msg)
+                log.debug(f"WS broadcast: health={health}, predictions={len(predictions)}, clients={len(ws_manager._clients)}")
+            except Exception as e:
+                log.error("WS push error: %s", e, exc_info=True)
+    except asyncio.CancelledError:
+        log.debug("WS push loop cancelled.")
+
+_push_task = None
 
 @asynccontextmanager
 async def _lifespan(app):
-    asyncio.create_task(_push_loop(), name="ws-push")
-    yield
+    global _push_task
+    _push_task = asyncio.create_task(_push_loop(), name="ws-push")
+    try:
+        yield
+    finally:
+        if _push_task and not _push_task.done():
+            _push_task.cancel()
+            try:
+                await _push_task
+            except asyncio.CancelledError:
+                pass
 
 app = FastAPI(title="IoT Failure Predictor", lifespan=_lifespan)
 
@@ -138,26 +155,45 @@ async def list_scenarios():
 async def run_scenario(name: str):
     if not _simulator:
         return {"error": "no simulator"}
-    asyncio.create_task(_simulator.run_scenario(name))
-    return {"status": "started", "scenario": name}
+    
+    # Check if scenario exists before creating task
+    from pathlib import Path
+    scenario_path = Path(__file__).parent.parent / "simulator" / "scenarios" / f"{name}.yaml"
+    if not scenario_path.exists():
+        return {"error": f"Scenario not found: {name}", "available": _simulator.runner.list_scenarios()}
+    
+    try:
+        asyncio.create_task(_simulator.run_scenario(name), name=f"scenario-{name}")
+        return {"status": "started", "scenario": name}
+    except Exception as e:
+        log.error("Scenario error: %s", e)
+        return {"error": f"Scenario failed: {e}"}
 
 @app.post("/api/simulator/inject")
 async def inject(body: dict):
     if not _simulator:
         return {"error": "no simulator"}
-    h = _simulator.injector.inject(
-        body.get("source_id", "unknown"),
-        body.get("tag", "value"),
-        body.get("fault_type", "spike"),
-        **{k: v for k, v in body.items() if k not in ("source_id", "tag", "fault_type")},
-    )
-    return {"status": "injected", "fault_id": h.fault_id}
+    try:
+        h = _simulator.injector.inject(
+            body.get("source_id", "unknown"),
+            body.get("tag", "value"),
+            body.get("fault_type", "spike"),
+            **{k: v for k, v in body.items() if k not in ("source_id", "tag", "fault_type")},
+        )
+        log.info("Injection created: %s", h.fault_id)
+        return {"status": "injected", "fault_id": h.fault_id, "active_count": len(_simulator.injector._active)}
+    except Exception as e:
+        log.error("Injection error: %s", e)
+        return {"error": str(e)}
 
 @app.post("/api/simulator/cancel")
 async def cancel():
     if _simulator:
+        count = len(_simulator.injector._active)
         _simulator.injector.cancel_all()
-    return {"status": "cancelled"}
+        log.info("Cancelled all %d injections", count)
+        return {"status": "cancelled", "count": count}
+    return {"status": "no simulator"}
 
 @app.get("/api/twin")
 async def twin():

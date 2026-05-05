@@ -187,6 +187,15 @@ async def main(cfg: dict, args) -> None:
     )
     log.info("Starting IoT Failure Predictor…")
 
+    try:
+        from generate_sample_logs import generate
+        log_path = Path(cfg.get("app", {}).get("data_dir", "./data")) / "sample.log"
+        if not log_path.exists():
+            log.info("Auto-generating sample.log because it is missing...")
+            generate(out_path=str(log_path))
+    except Exception as e:
+        log.error(f"Could not generate sample logs: {e}")
+
     # Notifier (new) ----------------------------------------------------------
     notifier = _make_notifier(args)
 
@@ -223,6 +232,7 @@ async def main(cfg: dict, args) -> None:
     # Wire tasks --------------------------------------------------------------
     asyncio.create_task(consume_to_db(bus, db, sim.twin), name="consumer")
     asyncio.create_task(agent._consume_loop(bus), name="agent")
+    asyncio.create_task(sim.start_background_traffic(bus, cfg), name="sim_bg")
 
     # Polling safety-net (new) ------------------------------------------------
     asyncio.create_task(
@@ -258,19 +268,45 @@ async def main(cfg: dict, args) -> None:
     log.info("Ctrl+C to stop.")
 
     api_task = asyncio.create_task(server.serve(), name="api")
-    await stop.wait()
+    try:
+        await stop.wait()
+    except (asyncio.CancelledError, KeyboardInterrupt):
+        log.info("Received shutdown signal.")
+    
     log.info("Shutting down…")
     server.should_exit = True
+    
+    # Wait for server to shut down gracefully (max 5 seconds)
+    try:
+        await asyncio.wait_for(api_task, timeout=5.0)
+    except asyncio.TimeoutError:
+        log.warning("Server shutdown timeout, forcing cancel.")
+        api_task.cancel()
+    except asyncio.CancelledError:
+        pass
+    
+    # Cancel all remaining background tasks (agent, ingestion, simulator, etc.)
+    for task in asyncio.all_tasks():
+        if task is not asyncio.current_task() and not task.done():
+            task.cancel()
+    
+    # Give tasks a moment to handle cancellation
+    await asyncio.sleep(0.1)
+    
     await db.close()
 
 
 async def consume_to_db(bus, db, twin=None) -> None:
-    while True:
-        event = await bus.consume()
-        await db.write(event.as_dict())
-        if twin and isinstance(event.value, (int, float)):
-            twin.update(event.source_id, event.tag, float(event.value), event.severity)
-        bus.task_done()
+    try:
+        while True:
+            event = await bus.consume()
+            await db.write(event.as_dict())
+            if twin and isinstance(event.value, (int, float)):
+                twin.update(event.source_id, event.tag, float(event.value), event.severity)
+            bus.task_done()
+    except asyncio.CancelledError:
+        log.debug("Database consumer cancelled.")
+        raise
 
 
 # ─── daemon / entry ──────────────────────────────────────────────────────────
@@ -311,4 +347,9 @@ if __name__ == "__main__":
     args = p.parse_args()
     if args.daemon:
         daemonise()
-    asyncio.run(main(load_config(args.config), args))
+    
+    try:
+        asyncio.run(main(load_config(args.config), args))
+    except KeyboardInterrupt:
+        log.info("Interrupted by user.")
+        sys.exit(0)

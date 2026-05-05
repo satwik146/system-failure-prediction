@@ -14,12 +14,14 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+import re
 from pathlib import Path
 
 from ingestion.event_bus import Event, EventBus, SourceType
 
 log = logging.getLogger(__name__)
 
+LOG_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\s+\[.*?\]\s+([^:]+):\s+(.*)")
 
 async def run_log_tailer(cfg: dict, bus: EventBus, chunk_size: int = 4096) -> None:
     """Start one tail task per configured log file."""
@@ -60,9 +62,13 @@ async def _tail_file(file_cfg: dict, bus: EventBus, chunk_size: int) -> None:
     fallback_event = _PollingEvent(interval=0.5)
     try:
         async for line in _read_new_lines(path, encoding, chunk_size, fallback_event):
+            match = LOG_PATTERN.match(line)
+            actual_source = file_id
+            if match:
+                actual_source = match.group(1).strip()
             await bus.publish(Event(
                 source_type = SourceType.LOG,
-                source_id   = file_id,
+                source_id   = actual_source,
                 tag         = tag,
                 value       = line,
             ))
@@ -78,13 +84,26 @@ async def _read_new_lines(
 ):
     """
     Generator that yields new lines appended to `path`.
-    Seeks to EOF on startup so we only process NEW lines.
+    Reads from the beginning of the file on startup to process all existing content.
     """
     partial = ""   # leftover bytes between chunks (no line terminator yet)
 
     with open(path, "r", encoding=encoding, errors="replace") as fh:
-        fh.seek(0, os.SEEK_END)   # skip existing content on startup
+        # READ FROM BEGINNING: process all existing content first
+        fh.seek(0, os.SEEK_SET)   # start from beginning to catch historical data
 
+        # Read all existing content first
+        all_content = fh.read()
+        if all_content:
+            text = all_content
+            lines = text.split("\n")
+            for line in lines:
+                stripped = line.strip()
+                if stripped:
+                    yield stripped
+            partial = lines[-1] if lines[-1] else ""
+
+        # Now watch for new appended lines
         while True:
             await ready.wait()   # sleep until OS says file changed
             ready.clear()

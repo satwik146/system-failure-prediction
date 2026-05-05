@@ -284,7 +284,7 @@ class LSTMPredictor:
         baseline = self._baselines.get(source_id, {})
         bstd  = baseline.get("std", 1.0)
         bmean = baseline.get("mean", arr.mean())
-        dev   = abs(arr.mean() - bmean) / bstd
+        dev   = abs(arr.mean() - bmean) / max(bstd, 1e-6)
         dev_score = max(0.0, 100.0 - dev * 15)
 
         health = 0.4 * slope_score + 0.3 * vol_score + 0.3 * dev_score
@@ -294,12 +294,28 @@ class LSTMPredictor:
         self, current: float, forecast: list[float], source_id: str
     ) -> tuple[bool, str]:
         baseline = self._baselines.get(source_id, {})
+        
+        # Initialize baseline if not set
+        if not baseline:
+            baseline = {"mean": current, "std": 1.0, "count": 1}
+            self._baselines[source_id] = baseline
+            return False, ""
+        
         bstd  = baseline.get("std", 1.0)
         bmean = baseline.get("mean", current)
+        
+        # Update baseline incrementally with new observation
+        count = baseline.get("count", 1)
+        new_mean = (bmean * count + current) / (count + 1)
+        new_std = max(1e-6, np.sqrt(((bstd ** 2) * count + (current - new_mean) ** 2) / (count + 1)))
+        baseline["mean"] = new_mean
+        baseline["std"] = new_std
+        baseline["count"] = count + 1
 
-        z = abs(current - bmean) / bstd
+        # Check if current value is outlier (> 2σ from baseline)
+        z = abs(current - bmean) / max(bstd, 1e-6)
         if z > self.anomaly_z:
-            return True, f"Current value {current:.1f} is {z:.1f}σ from baseline"
+            return True, f"Current value {current:.1f} is {z:.1f}σ from baseline ({bmean:.1f})"
 
         # Check if forecast shows steep downward trajectory
         arr   = np.array(forecast)
@@ -308,8 +324,13 @@ class LSTMPredictor:
             return True, f"Forecast shows steep decline: {slope:.1f} over {len(forecast)} steps"
 
         # Check forecast range breach (>3σ from baseline)
-        if any(abs(v - bmean) / bstd > 3 for v in forecast):
+        if bstd > 0 and any(abs(v - bmean) / bstd > 3 for v in forecast):
             return True, "Forecast predicts values >3σ from historical baseline"
+
+        # Check if many forecast values exceed baseline mean significantly
+        extreme_count = sum(1 for v in forecast if abs(v - bmean) > 2 * bstd)
+        if extreme_count > len(forecast) * 0.3:  # More than 30% extreme
+            return True, f"Forecast shows {extreme_count}/{len(forecast)} extreme values"
 
         return False, ""
 

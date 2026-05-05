@@ -1,0 +1,16 @@
+name: network_partition
+description: "Simulates network packet loss/disconnections causing flooded error states"
+
+steps:
+  - source_id: modbus_gw
+    tag: timeout_rate
+    fault_type: flood_errors
+    duration: 45
+    delay_before: 0
+
+  - source_id: pump_01
+    tag: packet_loss_pct
+    fault_type: drift
+    target: 80.0
+    duration: 20
+    delay_before: 5

@@ -1,0 +1,500 @@
+2026-05-05 21:14:12 [INFO] pump_01: CPU wait: 61%
+2026-05-05 21:14:09 [INFO] pump_01: Response time: 0.42s
+2026-05-05 21:14:06 [ERROR] compressor_01: CPU wait: 65%
+2026-05-05 21:14:03 [CRITICAL] compressor_01: Memory usage: 90%
+2026-05-05 21:14:00 [WARNING] conveyor_01: Vibration level: 64 Hz
+2026-05-05 21:13:57 [INFO] compressor_01: CPU wait: 77%
+2026-05-05 21:13:54 [CRITICAL] compressor_01: Memory usage: 70%
+2026-05-05 21:13:51 [WARNING] compressor_01: Motor speed: 1933 rpm
+2026-05-05 21:13:48 [INFO] app_log: Motor speed: 1117 rpm
+2026-05-05 21:13:45 [ERROR] conveyor_01: Sensor drift: 6.84 units
+2026-05-05 21:13:42 [ERROR] conveyor_01: Current draw: 8.6 A
+2026-05-05 21:13:39 [WARNING] conveyor_01: Vibration level: 61 Hz
+2026-05-05 21:13:36 [ERROR] compressor_01: Pressure value: 8.9 bar
+2026-05-05 21:13:33 [WARNING] pump_01: Sensor drift: 1.45 units
+2026-05-05 21:13:30 [CRITICAL] app_log: Temperature reading: 36°C
+2026-05-05 21:13:27 [WARNING] conveyor_01: Temperature reading: 93°C
+2026-05-05 21:13:24 [ERROR] app_log: Current draw: 6.9 A
+2026-05-05 21:13:21 [WARNING] compressor_01: Vibration level: 49 Hz
+2026-05-05 21:13:18 [INFO] app_log: Sensor drift: -6.42 units
+2026-05-05 21:13:15 [INFO] compressor_01: CPU wait: 76%
+2026-05-05 21:13:12 [ERROR] app_log: Temperature reading: 48°C
+2026-05-05 21:13:09 [CRITICAL] app_log: Sensor drift: -1.08 units
+2026-05-05 21:13:06 [CRITICAL] pump_01: Current draw: 18.5 A
+2026-05-05 21:13:03 [INFO] compressor_01: Vibration level: 14 Hz
+2026-05-05 21:13:00 [INFO] app_log: CPU wait: 43%
+2026-05-05 21:12:57 [CRITICAL] conveyor_01: Response time: 1.68s
+2026-05-05 21:12:54 [ERROR] conveyor_01: Motor speed: 915 rpm
+2026-05-05 21:12:51 [ERROR] conveyor_01: Response time: 2.30s
+2026-05-05 21:12:48 [INFO] app_log: Response time: 1.52s
+2026-05-05 21:12:45 [ERROR] compressor_01: Response time: 1.82s
+2026-05-05 21:12:42 [ERROR] pump_01: Current draw: 5.3 A
+2026-05-05 21:12:39 [CRITICAL] pump_01: Sensor drift: 4.22 units
+2026-05-05 21:12:36 [WARNING] compressor_01: Temperature reading: 36°C
+2026-05-05 21:12:33 [ERROR] conveyor_01: Sensor drift: -4.82 units
+2026-05-05 21:12:30 [WARNING] app_log: Sensor drift: -6.28 units
+2026-05-05 21:12:27 [INFO] pump_01: Memory usage: 54%
+2026-05-05 21:12:24 [CRITICAL] compressor_01: Motor speed: 1636 rpm
+2026-05-05 21:12:21 [INFO] pump_01: Motor speed: 1832 rpm
+2026-05-05 21:12:18 [CRITICAL] app_log: Sensor drift: 9.49 units
+2026-05-05 21:12:15 [WARNING] compressor_01: Response time: 1.47s
+2026-05-05 21:12:12 [INFO] pump_01: Motor speed: 1684 rpm
+2026-05-05 21:12:09 [WARNING] compressor_01: CPU wait: 48%
+2026-05-05 21:12:06 [INFO] app_log: Response time: 4.49s
+2026-05-05 21:12:03 [INFO] pump_01: Motor speed: 1817 rpm
+2026-05-05 21:12:00 [INFO] app_log: Response time: 3.94s
+2026-05-05 21:11:57 [ERROR] conveyor_01: Vibration level: 51 Hz
+2026-05-05 21:11:54 [ERROR] pump_01: Memory usage: 87%
+2026-05-05 21:11:51 [INFO] app_log: CPU wait: 41%
+2026-05-05 21:11:48 [ERROR] compressor_01: Motor speed: 1826 rpm
+2026-05-05 21:11:45 [WARNING] app_log: Pressure value: 7.2 bar
+2026-05-05 21:11:42 [WARNING] conveyor_01: Pressure value: 9.5 bar
+2026-05-05 21:11:39 [CRITICAL] app_log: Response time: 2.26s
+2026-05-05 21:11:36 [ERROR] app_log: Temperature reading: 29°C
+2026-05-05 21:11:33 [CRITICAL] app_log: Pressure value: 3.1 bar
+2026-05-05 21:11:30 [WARNING] conveyor_01: Vibration level: 49 Hz
+2026-05-05 21:11:27 [WARNING] app_log: Response time: 2.59s
+2026-05-05 21:11:24 [CRITICAL] app_log: Response time: 0.29s
+2026-05-05 21:11:21 [INFO] pump_01: Pressure value: 8.9 bar
+2026-05-05 21:11:18 [ERROR] conveyor_01: CPU wait: 11%
+2026-05-05 21:11:15 [CRITICAL] pump_01: Current draw: 21.9 A
+2026-05-05 21:11:12 [CRITICAL] compressor_01: CPU wait: 75%
+2026-05-05 21:11:09 [INFO] app_log: Sensor drift: 9.17 units
+2026-05-05 21:11:06 [CRITICAL] conveyor_01: Current draw: 5.7 A
+2026-05-05 21:11:03 [ERROR] conveyor_01: Queue depth: 363
+2026-05-05 21:11:00 [ERROR] app_log: Sensor drift: -7.54 units
+2026-05-05 21:10:57 [INFO] pump_01: Vibration level: 46 Hz
+2026-05-05 21:10:54 [CRITICAL] conveyor_01: Motor speed: 1792 rpm
+2026-05-05 21:10:51 [INFO] pump_01: Motor speed: 1659 rpm
+2026-05-05 21:10:48 [ERROR] conveyor_01: Queue depth: 492
+2026-05-05 21:10:45 [WARNING] pump_01: Current draw: 13.2 A
+2026-05-05 21:10:42 [CRITICAL] compressor_01: Temperature reading: 47°C
+2026-05-05 21:10:39 [WARNING] pump_01: Response time: 3.56s
+2026-05-05 21:10:36 [CRITICAL] app_log: Temperature reading: 37°C
+2026-05-05 21:10:33 [INFO] conveyor_01: Vibration level: 64 Hz
+2026-05-05 21:10:30 [WARNING] pump_01: Vibration level: 67 Hz
+2026-05-05 21:10:27 [WARNING] conveyor_01: Sensor drift: -5.34 units
+2026-05-05 21:10:24 [ERROR] pump_01: Current draw: 14.0 A
+2026-05-05 21:10:21 [INFO] compressor_01: Memory usage: 18%
+2026-05-05 21:10:18 [WARNING] compressor_01: Memory usage: 26%
+2026-05-05 21:10:15 [WARNING] compressor_01: Temperature reading: 34°C
+2026-05-05 21:10:12 [CRITICAL] pump_01: Memory usage: 39%
+2026-05-05 21:10:09 [WARNING] app_log: Sensor drift: 1.66 units
+2026-05-05 21:10:06 [CRITICAL] app_log: CPU wait: 41%
+2026-05-05 21:10:03 [WARNING] pump_01: Temperature reading: 48°C
+2026-05-05 21:10:00 [CRITICAL] app_log: Vibration level: 13 Hz
+2026-05-05 21:09:57 [INFO] conveyor_01: Motor speed: 1046 rpm
+2026-05-05 21:09:54 [CRITICAL] conveyor_01: Queue depth: 55
+2026-05-05 21:09:51 [ERROR] app_log: Current draw: 24.9 A
+2026-05-05 21:09:48 [INFO] pump_01: Queue depth: 379
+2026-05-05 21:09:45 [WARNING] app_log: Memory usage: 48%
+2026-05-05 21:09:42 [INFO] pump_01: Vibration level: 34 Hz
+2026-05-05 21:09:39 [WARNING] compressor_01: Temperature reading: 46°C
+2026-05-05 21:09:36 [CRITICAL] conveyor_01: Temperature reading: 46°C
+2026-05-05 21:09:33 [INFO] conveyor_01: Motor speed: 1767 rpm
+2026-05-05 21:09:30 [WARNING] pump_01: Temperature reading: 70°C
+2026-05-05 21:09:27 [INFO] pump_01: Response time: 4.78s
+2026-05-05 21:09:24 [WARNING] compressor_01: Pressure value: 6.3 bar
+2026-05-05 21:09:21 [INFO] compressor_01: Response time: 1.91s
+2026-05-05 21:09:18 [WARNING] app_log: Sensor drift: -6.85 units
+2026-05-05 21:09:15 [WARNING] app_log: Pressure value: 5.2 bar
+2026-05-05 21:09:12 [INFO] app_log: CPU wait: 19%
+2026-05-05 21:09:09 [ERROR] pump_01: CPU wait: 0%
+2026-05-05 21:09:06 [ERROR] compressor_01: Temperature reading: 71°C
+2026-05-05 21:09:03 [ERROR] app_log: Motor speed: 1999 rpm
+2026-05-05 21:09:00 [ERROR] app_log: CPU wait: 30%
+2026-05-05 21:08:57 [WARNING] conveyor_01: Current draw: 24.5 A
+2026-05-05 21:08:54 [ERROR] app_log: Memory usage: 68%
+2026-05-05 21:08:51 [INFO] pump_01: Queue depth: 496
+2026-05-05 21:08:48 [INFO] conveyor_01: Sensor drift: -9.38 units
+2026-05-05 21:08:45 [ERROR] app_log: Sensor drift: 4.27 units
+2026-05-05 21:08:42 [WARNING] app_log: Queue depth: 16
+2026-05-05 21:08:39 [ERROR] conveyor_01: Memory usage: 91%
+2026-05-05 21:08:36 [WARNING] app_log: Temperature reading: 57°C
+2026-05-05 21:08:33 [ERROR] compressor_01: CPU wait: 31%
+2026-05-05 21:08:30 [CRITICAL] conveyor_01: Temperature reading: 102°C
+2026-05-05 21:08:27 [ERROR] compressor_01: Response time: 0.41s
+2026-05-05 21:08:24 [CRITICAL] conveyor_01: Memory usage: 86%
+2026-05-05 21:08:21 [INFO] app_log: Queue depth: 144
+2026-05-05 21:08:18 [ERROR] compressor_01: Queue depth: 365
+2026-05-05 21:08:15 [INFO] pump_01: Motor speed: 1065 rpm
+2026-05-05 21:08:12 [CRITICAL] conveyor_01: Sensor drift: 3.07 units
+2026-05-05 21:08:09 [INFO] conveyor_01: Vibration level: 39 Hz
+2026-05-05 21:08:06 [INFO] conveyor_01: Memory usage: 45%
+2026-05-05 21:08:03 [ERROR] conveyor_01: Temperature reading: 56°C
+2026-05-05 21:08:00 [CRITICAL] conveyor_01: Pressure value: 4.2 bar
+2026-05-05 21:07:57 [INFO] compressor_01: Response time: 0.76s
+2026-05-05 21:07:54 [ERROR] app_log: Motor speed: 932 rpm
+2026-05-05 21:07:51 [CRITICAL] pump_01: Pressure value: 5.8 bar
+2026-05-05 21:07:48 [INFO] app_log: Vibration level: 36 Hz
+2026-05-05 21:07:45 [CRITICAL] app_log: Current draw: 23.4 A
+2026-05-05 21:07:42 [CRITICAL] pump_01: Current draw: 12.3 A
+2026-05-05 21:07:39 [INFO] compressor_01: Pressure value: 7.8 bar
+2026-05-05 21:07:36 [INFO] compressor_01: Memory usage: 18%
+2026-05-05 21:07:33 [CRITICAL] compressor_01: Queue depth: 291
+2026-05-05 21:07:30 [ERROR] app_log: Temperature reading: 64°C
+2026-05-05 21:07:27 [ERROR] conveyor_01: Current draw: 5.0 A
+2026-05-05 21:07:24 [INFO] compressor_01: Response time: 0.99s
+2026-05-05 21:07:21 [WARNING] conveyor_01: Memory usage: 52%
+2026-05-05 21:07:18 [CRITICAL] pump_01: Pressure value: 3.6 bar
+2026-05-05 21:07:15 [INFO] compressor_01: Current draw: 22.0 A
+2026-05-05 21:07:12 [INFO] compressor_01: Motor speed: 1882 rpm
+2026-05-05 21:07:09 [ERROR] conveyor_01: Current draw: 17.6 A
+2026-05-05 21:07:06 [ERROR] conveyor_01: Temperature reading: 77°C
+2026-05-05 21:07:03 [ERROR] pump_01: Response time: 2.41s
+2026-05-05 21:07:00 [INFO] compressor_01: Motor speed: 1811 rpm
+2026-05-05 21:06:57 [CRITICAL] pump_01: Motor speed: 1977 rpm
+2026-05-05 21:06:54 [WARNING] conveyor_01: Sensor drift: 4.44 units
+2026-05-05 21:06:51 [ERROR] conveyor_01: Motor speed: 1861 rpm
+2026-05-05 21:06:48 [WARNING] conveyor_01: CPU wait: 13%
+2026-05-05 21:06:45 [WARNING] compressor_01: CPU wait: 46%
+2026-05-05 21:06:42 [INFO] app_log: Pressure value: 3.4 bar
+2026-05-05 21:06:39 [WARNING] pump_01: Response time: 0.73s
+2026-05-05 21:06:36 [INFO] pump_01: Temperature reading: 64°C
+2026-05-05 21:06:33 [ERROR] conveyor_01: Sensor drift: 7.36 units
+2026-05-05 21:06:30 [INFO] pump_01: Response time: 4.54s
+2026-05-05 21:06:27 [CRITICAL] app_log: Memory usage: 90%
+2026-05-05 21:06:24 [WARNING] pump_01: Response time: 4.27s
+2026-05-05 21:06:21 [WARNING] app_log: Response time: 4.66s
+2026-05-05 21:06:18 [INFO] pump_01: CPU wait: 10%
+2026-05-05 21:06:15 [INFO] pump_01: Motor speed: 1700 rpm
+2026-05-05 21:06:12 [WARNING] conveyor_01: Pressure value: 4.6 bar
+2026-05-05 21:06:09 [CRITICAL] conveyor_01: Current draw: 18.1 A
+2026-05-05 21:06:06 [INFO] compressor_01: Queue depth: 382
+2026-05-05 21:06:03 [INFO] compressor_01: Memory usage: 80%
+2026-05-05 21:06:00 [ERROR] conveyor_01: Current draw: 15.3 A
+2026-05-05 21:05:57 [WARNING] compressor_01: Temperature reading: 34°C
+2026-05-05 21:05:54 [ERROR] compressor_01: Queue depth: 156
+2026-05-05 21:05:51 [WARNING] pump_01: Vibration level: 70 Hz
+2026-05-05 21:05:48 [INFO] compressor_01: Sensor drift: -2.08 units
+2026-05-05 21:05:45 [WARNING] app_log: Memory usage: 59%
+2026-05-05 21:05:42 [INFO] app_log: Response time: 3.21s
+2026-05-05 21:05:39 [INFO] pump_01: Memory usage: 65%
+2026-05-05 21:05:36 [ERROR] compressor_01: Response time: 0.14s
+2026-05-05 21:05:33 [ERROR] app_log: Current draw: 20.4 A
+2026-05-05 21:05:30 [WARNING] pump_01: Motor speed: 1561 rpm
+2026-05-05 21:05:27 [WARNING] pump_01: CPU wait: 5%
+2026-05-05 21:05:24 [WARNING] conveyor_01: Temperature reading: 71°C
+2026-05-05 21:05:21 [CRITICAL] pump_01: Current draw: 7.1 A
+2026-05-05 21:05:18 [CRITICAL] compressor_01: Motor speed: 1729 rpm
+2026-05-05 21:05:15 [INFO] pump_01: Current draw: 12.2 A
+2026-05-05 21:05:12 [WARNING] conveyor_01: Sensor drift: -4.36 units
+2026-05-05 21:05:09 [ERROR] compressor_01: Motor speed: 1235 rpm
+2026-05-05 21:05:06 [INFO] conveyor_01: Response time: 4.06s
+2026-05-05 21:05:03 [WARNING] compressor_01: Memory usage: 19%
+2026-05-05 21:05:00 [WARNING] conveyor_01: Pressure value: 4.6 bar
+2026-05-05 21:04:57 [CRITICAL] conveyor_01: Vibration level: 44 Hz
+2026-05-05 21:04:54 [WARNING] compressor_01: Motor speed: 991 rpm
+2026-05-05 21:04:51 [ERROR] pump_01: Vibration level: 16 Hz
+2026-05-05 21:04:48 [INFO] compressor_01: Current draw: 7.9 A
+2026-05-05 21:04:45 [INFO] compressor_01: Temperature reading: 34°C
+2026-05-05 21:04:42 [INFO] app_log: Vibration level: 42 Hz
+2026-05-05 21:04:39 [INFO] pump_01: Current draw: 8.3 A
+2026-05-05 21:04:36 [INFO] app_log: Temperature reading: 97°C
+2026-05-05 21:04:33 [CRITICAL] compressor_01: Response time: 2.87s
+2026-05-05 21:04:30 [ERROR] pump_01: Sensor drift: -8.81 units
+2026-05-05 21:04:27 [CRITICAL] app_log: Memory usage: 92%
+2026-05-05 21:04:24 [INFO] conveyor_01: CPU wait: 38%
+2026-05-05 21:04:21 [INFO] app_log: Temperature reading: 102°C
+2026-05-05 21:04:18 [WARNING] pump_01: Memory usage: 16%
+2026-05-05 21:04:15 [INFO] pump_01: Pressure value: 7.9 bar
+2026-05-05 21:04:12 [WARNING] pump_01: Motor speed: 1570 rpm
+2026-05-05 21:04:09 [WARNING] compressor_01: Memory usage: 11%
+2026-05-05 21:04:06 [INFO] conveyor_01: Response time: 3.37s
+2026-05-05 21:04:03 [ERROR] conveyor_01: Current draw: 5.5 A
+2026-05-05 21:04:00 [INFO] conveyor_01: Temperature reading: 107°C
+2026-05-05 21:03:57 [WARNING] conveyor_01: CPU wait: 75%
+2026-05-05 21:03:54 [ERROR] pump_01: Response time: 0.24s
+2026-05-05 21:03:51 [INFO] conveyor_01: Queue depth: 32
+2026-05-05 21:03:48 [INFO] pump_01: Current draw: 10.1 A
+2026-05-05 21:03:45 [ERROR] conveyor_01: Sensor drift: 9.02 units
+2026-05-05 21:03:42 [CRITICAL] conveyor_01: Sensor drift: 6.24 units
+2026-05-05 21:03:39 [ERROR] compressor_01: Memory usage: 54%
+2026-05-05 21:03:36 [WARNING] pump_01: Response time: 3.87s
+2026-05-05 21:03:33 [WARNING] compressor_01: Temperature reading: 108°C
+2026-05-05 21:03:30 [WARNING] pump_01: Response time: 1.52s
+2026-05-05 21:03:27 [INFO] pump_01: Vibration level: 74 Hz
+2026-05-05 21:03:24 [WARNING] app_log: Vibration level: 27 Hz
+2026-05-05 21:03:21 [ERROR] pump_01: Motor speed: 1464 rpm
+2026-05-05 21:03:18 [WARNING] app_log: Queue depth: 241
+2026-05-05 21:03:15 [WARNING] pump_01: Response time: 3.60s
+2026-05-05 21:03:12 [INFO] conveyor_01: Pressure value: 4.7 bar
+2026-05-05 21:03:09 [INFO] compressor_01: Motor speed: 1970 rpm
+2026-05-05 21:03:06 [WARNING] pump_01: Temperature reading: 110°C
+2026-05-05 21:03:03 [CRITICAL] pump_01: Pressure value: 8.2 bar
+2026-05-05 21:03:00 [WARNING] conveyor_01: Response time: 2.56s
+2026-05-05 21:02:57 [INFO] app_log: Sensor drift: 6.70 units
+2026-05-05 21:02:54 [INFO] app_log: Current draw: 18.8 A
+2026-05-05 21:02:51 [WARNING] compressor_01: Pressure value: 7.0 bar
+2026-05-05 21:02:48 [CRITICAL] compressor_01: Temperature reading: 101°C
+2026-05-05 21:02:45 [INFO] conveyor_01: Sensor drift: 5.49 units
+2026-05-05 21:02:42 [INFO] conveyor_01: Queue depth: 353
+2026-05-05 21:02:39 [WARNING] pump_01: Pressure value: 5.8 bar
+2026-05-05 21:02:36 [ERROR] pump_01: Vibration level: 14 Hz
+2026-05-05 21:02:33 [CRITICAL] app_log: Memory usage: 69%
+2026-05-05 21:02:30 [CRITICAL] app_log: Current draw: 22.8 A
+2026-05-05 21:02:27 [CRITICAL] app_log: Sensor drift: -3.31 units
+2026-05-05 21:02:24 [INFO] compressor_01: Vibration level: 65 Hz
+2026-05-05 21:02:21 [ERROR] pump_01: Queue depth: 384
+2026-05-05 21:02:18 [CRITICAL] app_log: Vibration level: 65 Hz
+2026-05-05 21:02:15 [CRITICAL] app_log: Response time: 1.35s
+2026-05-05 21:02:12 [WARNING] conveyor_01: Response time: 1.67s
+2026-05-05 21:02:09 [ERROR] compressor_01: Response time: 0.82s
+2026-05-05 21:02:06 [CRITICAL] app_log: Motor speed: 1974 rpm
+2026-05-05 21:02:03 [CRITICAL] conveyor_01: Pressure value: 3.5 bar
+2026-05-05 21:02:00 [CRITICAL] app_log: Motor speed: 1698 rpm
+2026-05-05 21:01:57 [INFO] app_log: Queue depth: 187
+2026-05-05 21:01:54 [ERROR] conveyor_01: Vibration level: 65 Hz
+2026-05-05 21:01:51 [WARNING] compressor_01: CPU wait: 41%
+2026-05-05 21:01:48 [INFO] pump_01: Vibration level: 10 Hz
+2026-05-05 21:01:45 [WARNING] compressor_01: Temperature reading: 77°C
+2026-05-05 21:01:42 [ERROR] app_log: Sensor drift: -1.37 units
+2026-05-05 21:01:39 [WARNING] app_log: Motor speed: 880 rpm
+2026-05-05 21:01:36 [INFO] conveyor_01: Current draw: 11.3 A
+2026-05-05 21:01:33 [WARNING] conveyor_01: Sensor drift: 8.76 units
+2026-05-05 21:01:30 [CRITICAL] pump_01: CPU wait: 22%
+2026-05-05 21:01:27 [ERROR] compressor_01: Vibration level: 21 Hz
+2026-05-05 21:01:24 [CRITICAL] app_log: CPU wait: 49%
+2026-05-05 21:01:21 [INFO] app_log: Vibration level: 67 Hz
+2026-05-05 21:01:18 [INFO] app_log: Motor speed: 1230 rpm
+2026-05-05 21:01:15 [CRITICAL] conveyor_01: CPU wait: 16%
+2026-05-05 21:01:12 [ERROR] app_log: Queue depth: 140
+2026-05-05 21:01:09 [ERROR] conveyor_01: Vibration level: 53 Hz
+2026-05-05 21:01:06 [WARNING] app_log: Pressure value: 5.2 bar
+2026-05-05 21:01:03 [ERROR] compressor_01: Temperature reading: 34°C
+2026-05-05 21:01:00 [CRITICAL] app_log: Pressure value: 3.5 bar
+2026-05-05 21:00:57 [ERROR] pump_01: CPU wait: 78%
+2026-05-05 21:00:54 [ERROR] conveyor_01: CPU wait: 36%
+2026-05-05 21:00:51 [ERROR] compressor_01: Pressure value: 4.7 bar
+2026-05-05 21:00:48 [INFO] conveyor_01: Memory usage: 58%
+2026-05-05 21:00:45 [CRITICAL] compressor_01: Memory usage: 73%
+2026-05-05 21:00:42 [WARNING] app_log: Sensor drift: 6.31 units
+2026-05-05 21:00:39 [ERROR] compressor_01: Temperature reading: 29°C
+2026-05-05 21:00:36 [WARNING] app_log: Temperature reading: 114°C
+2026-05-05 21:00:33 [ERROR] compressor_01: Temperature reading: 77°C
+2026-05-05 21:00:30 [CRITICAL] pump_01: CPU wait: 75%
+2026-05-05 21:00:27 [ERROR] conveyor_01: Current draw: 23.6 A
+2026-05-05 21:00:24 [ERROR] pump_01: Memory usage: 23%
+2026-05-05 21:00:21 [WARNING] compressor_01: Memory usage: 33%
+2026-05-05 21:00:18 [ERROR] app_log: Pressure value: 4.4 bar
+2026-05-05 21:00:15 [WARNING] conveyor_01: Sensor drift: 7.11 units
+2026-05-05 21:00:12 [CRITICAL] conveyor_01: Motor speed: 1142 rpm
+2026-05-05 21:00:09 [ERROR] compressor_01: Pressure value: 9.0 bar
+2026-05-05 21:00:06 [ERROR] conveyor_01: CPU wait: 54%
+2026-05-05 21:00:03 [INFO] app_log: Motor speed: 1338 rpm
+2026-05-05 21:00:00 [ERROR] conveyor_01: Temperature reading: 83°C
+2026-05-05 20:59:57 [CRITICAL] conveyor_01: Temperature reading: 109°C
+2026-05-05 20:59:54 [CRITICAL] pump_01: Current draw: 16.0 A
+2026-05-05 20:59:51 [CRITICAL] app_log: Response time: 3.30s
+2026-05-05 20:59:48 [ERROR] compressor_01: Memory usage: 91%
+2026-05-05 20:59:45 [INFO] conveyor_01: Temperature reading: 112°C
+2026-05-05 20:59:42 [CRITICAL] app_log: CPU wait: 61%
+2026-05-05 20:59:39 [WARNING] compressor_01: Sensor drift: 3.16 units
+2026-05-05 20:59:36 [INFO] app_log: Vibration level: 69 Hz
+2026-05-05 20:59:33 [WARNING] app_log: Memory usage: 89%
+2026-05-05 20:59:30 [INFO] compressor_01: CPU wait: 76%
+2026-05-05 20:59:27 [CRITICAL] app_log: CPU wait: 69%
+2026-05-05 20:59:24 [CRITICAL] pump_01: Queue depth: 179
+2026-05-05 20:59:21 [CRITICAL] conveyor_01: Temperature reading: 110°C
+2026-05-05 20:59:18 [WARNING] conveyor_01: Vibration level: 71 Hz
+2026-05-05 20:59:15 [INFO] pump_01: Queue depth: 444
+2026-05-05 20:59:12 [INFO] conveyor_01: Sensor drift: 4.67 units
+2026-05-05 20:59:09 [CRITICAL] pump_01: Current draw: 17.5 A
+2026-05-05 20:59:06 [WARNING] app_log: Vibration level: 44 Hz
+2026-05-05 20:59:03 [CRITICAL] app_log: Memory usage: 53%
+2026-05-05 20:59:00 [CRITICAL] app_log: Temperature reading: 44°C
+2026-05-05 20:58:57 [WARNING] app_log: CPU wait: 48%
+2026-05-05 20:58:54 [ERROR] conveyor_01: Queue depth: 129
+2026-05-05 20:58:51 [INFO] pump_01: Queue depth: 476
+2026-05-05 20:58:48 [CRITICAL] conveyor_01: Vibration level: 16 Hz
+2026-05-05 20:58:45 [CRITICAL] app_log: Sensor drift: -7.23 units
+2026-05-05 20:58:42 [CRITICAL] conveyor_01: Response time: 4.87s
+2026-05-05 20:58:39 [ERROR] conveyor_01: Queue depth: 228
+2026-05-05 20:58:36 [WARNING] app_log: Vibration level: 22 Hz
+2026-05-05 20:58:33 [INFO] app_log: Temperature reading: 73°C
+2026-05-05 20:58:30 [WARNING] pump_01: Current draw: 5.6 A
+2026-05-05 20:58:27 [WARNING] conveyor_01: Pressure value: 10.0 bar
+2026-05-05 20:58:24 [WARNING] conveyor_01: Memory usage: 76%
+2026-05-05 20:58:21 [INFO] pump_01: Motor speed: 1770 rpm
+2026-05-05 20:58:18 [CRITICAL] pump_01: Memory usage: 37%
+2026-05-05 20:58:15 [INFO] pump_01: Sensor drift: 6.02 units
+2026-05-05 20:58:12 [CRITICAL] app_log: Vibration level: 70 Hz
+2026-05-05 20:58:09 [INFO] pump_01: Queue depth: 15
+2026-05-05 20:58:06 [CRITICAL] conveyor_01: Vibration level: 37 Hz
+2026-05-05 20:58:03 [ERROR] app_log: Sensor drift: -4.43 units
+2026-05-05 20:58:00 [CRITICAL] compressor_01: Current draw: 20.9 A
+2026-05-05 20:57:57 [INFO] pump_01: Response time: 0.28s
+2026-05-05 20:57:54 [WARNING] app_log: Sensor drift: -0.93 units
+2026-05-05 20:57:51 [INFO] compressor_01: Current draw: 12.6 A
+2026-05-05 20:57:48 [ERROR] conveyor_01: Queue depth: 343
+2026-05-05 20:57:45 [WARNING] compressor_01: CPU wait: 53%
+2026-05-05 20:57:42 [WARNING] app_log: Vibration level: 20 Hz
+2026-05-05 20:57:39 [WARNING] app_log: Pressure value: 8.6 bar
+2026-05-05 20:57:36 [WARNING] pump_01: Memory usage: 40%
+2026-05-05 20:57:33 [WARNING] conveyor_01: Queue depth: 275
+2026-05-05 20:57:30 [CRITICAL] compressor_01: Temperature reading: 109°C
+2026-05-05 20:57:27 [ERROR] app_log: Motor speed: 1255 rpm
+2026-05-05 20:57:24 [CRITICAL] conveyor_01: Current draw: 19.5 A
+2026-05-05 20:57:21 [CRITICAL] conveyor_01: Sensor drift: 6.69 units
+2026-05-05 20:57:18 [WARNING] compressor_01: Vibration level: 34 Hz
+2026-05-05 20:57:15 [ERROR] conveyor_01: Queue depth: 63
+2026-05-05 20:57:12 [ERROR] pump_01: Pressure value: 8.9 bar
+2026-05-05 20:57:09 [ERROR] app_log: Sensor drift: -2.34 units
+2026-05-05 20:57:06 [ERROR] app_log: Sensor drift: 8.47 units
+2026-05-05 20:57:03 [WARNING] conveyor_01: Response time: 2.78s
+2026-05-05 20:57:00 [WARNING] pump_01: Memory usage: 67%
+2026-05-05 20:56:57 [WARNING] app_log: Motor speed: 1222 rpm
+2026-05-05 20:56:54 [CRITICAL] pump_01: Vibration level: 43 Hz
+2026-05-05 20:56:51 [CRITICAL] conveyor_01: Queue depth: 123
+2026-05-05 20:56:48 [CRITICAL] pump_01: Queue depth: 303
+2026-05-05 20:56:45 [WARNING] compressor_01: Memory usage: 44%
+2026-05-05 20:56:42 [INFO] pump_01: Pressure value: 9.2 bar
+2026-05-05 20:56:39 [WARNING] app_log: CPU wait: 51%
+2026-05-05 20:56:36 [WARNING] app_log: Current draw: 24.1 A
+2026-05-05 20:56:33 [ERROR] compressor_01: CPU wait: 44%
+2026-05-05 20:56:30 [CRITICAL] app_log: Current draw: 11.7 A
+2026-05-05 20:56:27 [CRITICAL] app_log: Temperature reading: 60°C
+2026-05-05 20:56:24 [CRITICAL] app_log: Vibration level: 31 Hz
+2026-05-05 20:56:21 [WARNING] compressor_01: Vibration level: 52 Hz
+2026-05-05 20:56:18 [INFO] compressor_01: Pressure value: 6.3 bar
+2026-05-05 20:56:15 [ERROR] pump_01: Queue depth: 434
+2026-05-05 20:56:12 [INFO] conveyor_01: Temperature reading: 87°C
+2026-05-05 20:56:09 [ERROR] app_log: Vibration level: 61 Hz
+2026-05-05 20:56:06 [INFO] compressor_01: Queue depth: 106
+2026-05-05 20:56:03 [INFO] compressor_01: Pressure value: 6.4 bar
+2026-05-05 20:56:00 [ERROR] compressor_01: Sensor drift: -1.75 units
+2026-05-05 20:55:57 [WARNING] compressor_01: Current draw: 14.4 A
+2026-05-05 20:55:54 [ERROR] conveyor_01: Pressure value: 7.1 bar
+2026-05-05 20:55:51 [CRITICAL] compressor_01: Memory usage: 60%
+2026-05-05 20:55:48 [INFO] compressor_01: Pressure value: 4.8 bar
+2026-05-05 20:55:45 [WARNING] pump_01: Queue depth: 278
+2026-05-05 20:55:42 [CRITICAL] compressor_01: CPU wait: 50%
+2026-05-05 20:55:39 [CRITICAL] app_log: Sensor drift: 5.98 units
+2026-05-05 20:55:36 [CRITICAL] app_log: Queue depth: 464
+2026-05-05 20:55:33 [WARNING] pump_01: Response time: 0.16s
+2026-05-05 20:55:30 [ERROR] compressor_01: Queue depth: 381
+2026-05-05 20:55:27 [INFO] conveyor_01: Response time: 2.69s
+2026-05-05 20:55:24 [CRITICAL] compressor_01: Response time: 1.31s
+2026-05-05 20:55:21 [INFO] compressor_01: Response time: 3.97s
+2026-05-05 20:55:18 [INFO] pump_01: Vibration level: 15 Hz
+2026-05-05 20:55:15 [INFO] app_log: Response time: 3.32s
+2026-05-05 20:55:12 [WARNING] app_log: CPU wait: 4%
+2026-05-05 20:55:09 [CRITICAL] compressor_01: CPU wait: 5%
+2026-05-05 20:55:06 [WARNING] compressor_01: Pressure value: 7.1 bar
+2026-05-05 20:55:03 [CRITICAL] pump_01: Sensor drift: 9.39 units
+2026-05-05 20:55:00 [CRITICAL] conveyor_01: Motor speed: 1893 rpm
+2026-05-05 20:54:57 [WARNING] conveyor_01: Memory usage: 47%
+2026-05-05 20:54:54 [ERROR] conveyor_01: Temperature reading: 22°C
+2026-05-05 20:54:51 [INFO] compressor_01: Vibration level: 22 Hz
+2026-05-05 20:54:48 [WARNING] conveyor_01: Vibration level: 28 Hz
+2026-05-05 20:54:45 [CRITICAL] compressor_01: Queue depth: 425
+2026-05-05 20:54:42 [CRITICAL] conveyor_01: Sensor drift: 2.13 units
+2026-05-05 20:54:39 [CRITICAL] conveyor_01: Queue depth: 323
+2026-05-05 20:54:36 [WARNING] app_log: Pressure value: 5.8 bar
+2026-05-05 20:54:33 [INFO] pump_01: Current draw: 7.9 A
+2026-05-05 20:54:30 [CRITICAL] app_log: Sensor drift: 9.31 units
+2026-05-05 20:54:27 [WARNING] compressor_01: Memory usage: 63%
+2026-05-05 20:54:24 [ERROR] conveyor_01: Temperature reading: 50°C
+2026-05-05 20:54:21 [INFO] app_log: Vibration level: 43 Hz
+2026-05-05 20:54:18 [WARNING] compressor_01: Memory usage: 31%
+2026-05-05 20:54:15 [CRITICAL] conveyor_01: Temperature reading: 115°C
+2026-05-05 20:54:12 [CRITICAL] pump_01: Temperature reading: 92°C
+2026-05-05 20:54:09 [INFO] conveyor_01: Motor speed: 1283 rpm
+2026-05-05 20:54:06 [INFO] conveyor_01: Current draw: 18.0 A
+2026-05-05 20:54:03 [WARNING] app_log: Sensor drift: -5.15 units
+2026-05-05 20:54:00 [WARNING] conveyor_01: Sensor drift: 8.71 units
+2026-05-05 20:53:57 [ERROR] app_log: Pressure value: 3.5 bar
+2026-05-05 20:53:54 [ERROR] conveyor_01: Pressure value: 4.8 bar
+2026-05-05 20:53:51 [WARNING] conveyor_01: Response time: 3.27s
+2026-05-05 20:53:48 [WARNING] app_log: Response time: 2.40s
+2026-05-05 20:53:45 [INFO] pump_01: Queue depth: 194
+2026-05-05 20:53:42 [INFO] conveyor_01: Queue depth: 88
+2026-05-05 20:53:39 [WARNING] conveyor_01: Sensor drift: 6.00 units
+2026-05-05 20:53:36 [WARNING] app_log: Temperature reading: 55°C
+2026-05-05 20:53:33 [WARNING] pump_01: Sensor drift: -7.69 units
+2026-05-05 20:53:30 [CRITICAL] conveyor_01: Response time: 4.89s
+2026-05-05 20:53:27 [CRITICAL] conveyor_01: Motor speed: 847 rpm
+2026-05-05 20:53:24 [WARNING] compressor_01: Queue depth: 422
+2026-05-05 20:53:21 [INFO] app_log: Temperature reading: 92°C
+2026-05-05 20:53:18 [CRITICAL] compressor_01: Motor speed: 1725 rpm
+2026-05-05 20:53:15 [INFO] compressor_01: Current draw: 16.1 A
+2026-05-05 20:53:12 [INFO] compressor_01: Response time: 2.22s
+2026-05-05 20:53:09 [INFO] app_log: Queue depth: 342
+2026-05-05 20:53:06 [INFO] conveyor_01: Current draw: 12.6 A
+2026-05-05 20:53:03 [WARNING] compressor_01: Temperature reading: 97°C
+2026-05-05 20:53:00 [INFO] conveyor_01: Response time: 2.42s
+2026-05-05 20:52:57 [ERROR] pump_01: CPU wait: 21%
+2026-05-05 20:52:54 [INFO] compressor_01: Sensor drift: 1.33 units
+2026-05-05 20:52:51 [INFO] compressor_01: Memory usage: 10%
+2026-05-05 20:52:48 [ERROR] app_log: Vibration level: 41 Hz
+2026-05-05 20:52:45 [ERROR] conveyor_01: Motor speed: 845 rpm
+2026-05-05 20:52:42 [ERROR] pump_01: Memory usage: 39%
+2026-05-05 20:52:39 [CRITICAL] compressor_01: Sensor drift: 8.54 units
+2026-05-05 20:52:36 [WARNING] conveyor_01: Memory usage: 89%
+2026-05-05 20:52:33 [INFO] compressor_01: Memory usage: 29%
+2026-05-05 20:52:30 [CRITICAL] pump_01: Sensor drift: 9.75 units
+2026-05-05 20:52:27 [WARNING] conveyor_01: CPU wait: 48%
+2026-05-05 20:52:24 [CRITICAL] compressor_01: Vibration level: 64 Hz
+2026-05-05 20:52:21 [INFO] conveyor_01: Memory usage: 28%
+2026-05-05 20:52:18 [ERROR] compressor_01: Vibration level: 31 Hz
+2026-05-05 20:52:15 [INFO] compressor_01: Motor speed: 1736 rpm
+2026-05-05 20:52:12 [WARNING] app_log: Current draw: 15.6 A
+2026-05-05 20:52:09 [ERROR] app_log: Response time: 4.87s
+2026-05-05 20:52:06 [ERROR] compressor_01: Vibration level: 51 Hz
+2026-05-05 20:52:03 [ERROR] conveyor_01: Vibration level: 48 Hz
+2026-05-05 20:52:00 [CRITICAL] app_log: Sensor drift: -8.30 units
+2026-05-05 20:51:57 [ERROR] conveyor_01: Current draw: 11.0 A
+2026-05-05 20:51:54 [CRITICAL] compressor_01: Motor speed: 944 rpm
+2026-05-05 20:51:51 [WARNING] compressor_01: Memory usage: 85%
+2026-05-05 20:51:48 [ERROR] pump_01: Memory usage: 80%
+2026-05-05 20:51:45 [CRITICAL] compressor_01: Motor speed: 1858 rpm
+2026-05-05 20:51:42 [ERROR] conveyor_01: Temperature reading: 28°C
+2026-05-05 20:51:39 [CRITICAL] pump_01: Temperature reading: 82°C
+2026-05-05 20:51:36 [WARNING] app_log: Current draw: 9.0 A
+2026-05-05 20:51:33 [WARNING] compressor_01: Memory usage: 58%
+2026-05-05 20:51:30 [INFO] conveyor_01: Pressure value: 7.7 bar
+2026-05-05 20:51:27 [INFO] app_log: CPU wait: 36%
+2026-05-05 20:51:24 [INFO] conveyor_01: Motor speed: 1274 rpm
+2026-05-05 20:51:21 [WARNING] conveyor_01: CPU wait: 17%
+2026-05-05 20:51:18 [CRITICAL] conveyor_01: Temperature reading: 42°C
+2026-05-05 20:51:15 [ERROR] compressor_01: Pressure value: 8.4 bar
+2026-05-05 20:51:12 [CRITICAL] pump_01: Vibration level: 26 Hz
+2026-05-05 20:51:09 [CRITICAL] pump_01: Memory usage: 95%
+2026-05-05 20:51:06 [INFO] pump_01: Response time: 5.00s
+2026-05-05 20:51:03 [WARNING] pump_01: Memory usage: 55%
+2026-05-05 20:51:00 [ERROR] pump_01: Memory usage: 32%
+2026-05-05 20:50:57 [WARNING] pump_01: Vibration level: 45 Hz
+2026-05-05 20:50:54 [CRITICAL] compressor_01: Motor speed: 1896 rpm
+2026-05-05 20:50:51 [WARNING] app_log: Memory usage: 47%
+2026-05-05 20:50:48 [CRITICAL] compressor_01: CPU wait: 11%
+2026-05-05 20:50:45 [ERROR] compressor_01: Queue depth: 415
+2026-05-05 20:50:42 [WARNING] pump_01: Memory usage: 22%
+2026-05-05 20:50:39 [WARNING] pump_01: Queue depth: 285
+2026-05-05 20:50:36 [CRITICAL] app_log: Motor speed: 1673 rpm
+2026-05-05 20:50:33 [ERROR] pump_01: Sensor drift: 2.58 units
+2026-05-05 20:50:30 [WARNING] compressor_01: Vibration level: 30 Hz
+2026-05-05 20:50:27 [CRITICAL] app_log: Queue depth: 177
+2026-05-05 20:50:24 [CRITICAL] app_log: Memory usage: 75%
+2026-05-05 20:50:21 [CRITICAL] conveyor_01: Queue depth: 47
+2026-05-05 20:50:18 [INFO] compressor_01: CPU wait: 61%
+2026-05-05 20:50:15 [ERROR] app_log: CPU wait: 22%
+2026-05-05 20:50:12 [INFO] pump_01: Pressure value: 8.8 bar
+2026-05-05 20:50:09 [CRITICAL] conveyor_01: CPU wait: 7%
+2026-05-05 20:50:06 [CRITICAL] app_log: Current draw: 19.4 A
+2026-05-05 20:50:03 [ERROR] compressor_01: CPU wait: 79%
+2026-05-05 20:50:00 [CRITICAL] app_log: Sensor drift: -0.54 units
+2026-05-05 20:49:57 [ERROR] compressor_01: Queue depth: 22
+2026-05-05 20:49:54 [ERROR] conveyor_01: Pressure value: 4.3 bar
+2026-05-05 20:49:51 [ERROR] conveyor_01: Response time: 4.78s
+2026-05-05 20:49:48 [INFO] compressor_01: Pressure value: 9.4 bar
+2026-05-05 20:49:45 [INFO] compressor_01: Memory usage: 13%
+2026-05-05 20:49:42 [INFO] app_log: Pressure value: 9.7 bar
+2026-05-05 20:49:39 [ERROR] pump_01: Response time: 3.20s
+2026-05-05 20:49:36 [CRITICAL] compressor_01: Motor speed: 1704 rpm
+2026-05-05 20:49:33 [WARNING] pump_01: Motor speed: 1723 rpm
+2026-05-05 20:49:30 [INFO] app_log: Current draw: 7.6 A
+2026-05-05 20:49:27 [ERROR] compressor_01: CPU wait: 54%
+2026-05-05 20:49:24 [ERROR] compressor_01: Queue depth: 353
+2026-05-05 20:49:21 [WARNING] compressor_01: Response time: 2.15s
+2026-05-05 20:49:18 [ERROR] app_log: Motor speed: 1055 rpm
+2026-05-05 20:49:15 [WARNING] compressor_01: Queue depth: 344

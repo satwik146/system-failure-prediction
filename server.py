@@ -35,27 +35,51 @@ class _WSManager:
 ws_manager = _WSManager()
 
 async def _push_loop():
-    while True:
-        await asyncio.sleep(2)
-        if not ws_manager._clients:
-            continue
-        try:
-            bus_stats = _bus.stats() if _bus and callable(getattr(_bus, 'stats', None)) else (_bus.stats if _bus else {})
-            await ws_manager.broadcast({
-                "timestamp": time.time(),
-                "bus": bus_stats,
-                "system_health": _agent.system_health() if _agent else 100.0,
-                "predictions": _agent.latest_results() if _agent else {},
-                "simulator": _simulator.status() if _simulator else {},
-                "actions": _agent._planner.recent_actions[-5:] if _agent else [],
-            })
-        except Exception as e:
-            log.debug("WS push error: %s", e)
+    try:
+        while True:
+            await asyncio.sleep(2)
+            if not ws_manager._clients:
+                continue
+            try:
+                bus_stats = {}
+                if _bus:
+                    s = getattr(_bus, 'stats', None)
+                    bus_stats = s() if callable(s) else (s or {})
+
+                predictions = _agent.latest_results() if _agent else {}
+                health = _agent.system_health() if _agent else 100.0
+                planner = getattr(_agent, '_planner', None)
+                actions = getattr(planner, 'recent_actions', [])[-5:] if planner else []
+                sim = _simulator.status() if _simulator else {}
+
+                await ws_manager.broadcast({
+                    "timestamp": time.time(),
+                    "bus": bus_stats,
+                    "system_health": health,
+                    "predictions": predictions,
+                    "simulator": sim,
+                    "actions": actions,
+                })
+            except Exception as e:
+                log.error("WS push error: %s", e, exc_info=True)
+    except asyncio.CancelledError:
+        log.debug("WS push loop cancelled.")
+
+_push_task = None
 
 @asynccontextmanager
 async def _lifespan(app):
-    asyncio.create_task(_push_loop(), name="ws-push")
-    yield
+    global _push_task
+    _push_task = asyncio.create_task(_push_loop(), name="ws-push")
+    try:
+        yield
+    finally:
+        if _push_task and not _push_task.done():
+            _push_task.cancel()
+            try:
+                await _push_task
+            except asyncio.CancelledError:
+                pass
 
 app = FastAPI(title="IoT Failure Predictor", lifespan=_lifespan)
 
@@ -79,9 +103,12 @@ async def health():
     return {"status": "ok", "time": time.time()}
 
 @app.get("/api/status")
-async def status():
+async def api_status():
     try:
-        bus_stats = _bus.stats() if _bus and callable(getattr(_bus, 'stats', None)) else (_bus.stats if _bus else {})
+        bus_stats = {}
+        if _bus:
+            s = getattr(_bus, 'stats', None)
+            bus_stats = s() if callable(s) else (s or {})
         return {
             "bus": bus_stats,
             "system_health": _agent.system_health() if _agent else 100.0,

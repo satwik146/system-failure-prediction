@@ -48,3 +48,42 @@ class Simulator:
     async def run_scenario(self, scenario_name: str):
         """Run a predefined failure scenario."""
         return await self.runner.run(scenario_name, prediction_queue=self.prediction_queue)
+
+    async def start_background_traffic(self, bus, cfg: dict):
+        """Generates continuous virtual sensor data and pushes to bus."""
+        import random
+        from ingestion.event_bus import Event, SourceType
+        
+        sim_cfg = cfg.get("simulator", {})
+        if not sim_cfg.get("enabled", False):
+            return
+            
+        virtual_sources = sim_cfg.get("virtual_sources", [])
+        tick_interval = sim_cfg.get("tick_interval", 2.0)
+        
+        try:
+            while True:
+                for src in virtual_sources:
+                    sid = src["id"]
+                    state = self.twin.get_state(sid)
+                    
+                    if state and state.is_injected:
+                        # Fault injector is controlling this source
+                        # Push the current (faulty) twin metrics to the bus so agent sees them
+                        for tag, val in state.metrics.items():
+                            await bus.publish(Event(SourceType.SYSTEM, sid, tag, val, severity=state.severity))
+                    else:
+                        # Generate normal baseline data with noise
+                        for tag, meta in src.get("tags", {}).items():
+                            base = meta.get("base", 0.0)
+                            noise = meta.get("noise", 0.0)
+                            val = base + random.uniform(-noise, noise)
+                            self.twin.update(sid, tag, val, severity="info", injected=False)
+                            await bus.publish(Event(SourceType.SYSTEM, sid, tag, val, severity="info"))
+                
+                await asyncio.sleep(tick_interval)
+        except asyncio.CancelledError:
+            import logging
+            logging.getLogger(__name__).debug("Background traffic simulator cancelled.")
+            raise
+

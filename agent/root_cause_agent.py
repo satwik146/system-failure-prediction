@@ -78,6 +78,22 @@ _RULES: list[dict] = [
                     "Lower workload or throttle device"],
         "confidence": 0.88,
     },
+    {
+        "id": "power_spike",
+        "signals": ["power surge", "spike", "current_draw", "voltage drop", "power", "amps", "power spike"],
+        "cause":   "Electrical power surge or instability detected",
+        "actions": ["Verify UPS status", "Check electrical grounding",
+                    "Isolate affected power phases"],
+        "confidence": 0.86,
+    },
+    {
+        "id": "network_partition",
+        "signals": ["timeout_rate", "packet_loss", "flood_errors", "gateway unreachable"],
+        "cause":   "Severe network packet loss or partition",
+        "actions": ["Reset network gateway switch", "Check physical cabling",
+                    "Failover to redundant network link"],
+        "confidence": 0.89,
+    },
 ]
 
 

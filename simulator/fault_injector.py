@@ -61,7 +61,7 @@ class FaultInjector:
         fault_id = f"{source_id}:{tag}:{fault_type}:{int(time.time())}"
         handle = InjectionHandle(fault_id, source_id, fault_type, time.time())
 
-        coro = self._dispatch(source_id, tag, fault_type, kwargs)
+        coro = self._dispatch(source_id, tag, fault_type, kwargs, handle)
         handle._task = asyncio.create_task(coro, name=f"fault-{fault_id}")
         self._active[fault_id] = handle
 
@@ -78,14 +78,17 @@ class FaultInjector:
         } for h in self._active.values()]
 
     def cancel_all(self) -> None:
-        for h in self._active.values():
+        count = len(self._active)
+        for h in list(self._active.values()):
             h.cancel()
         self._active.clear()
+        if count > 0:
+            log.info("Cancelled and cleared %d active injections", count)
 
     # ── Fault coroutines ──────────────────────────────────────────────────────
 
     async def _dispatch(self, source_id: str, tag: str,
-                        fault_type: str, kw: dict) -> None:
+                        fault_type: str, kw: dict, handle: InjectionHandle) -> None:
         state   = self._twin.get_state(source_id)
         current = state.metrics.get(tag, 0.0) if state else 0.0
         dur     = kw.get("duration", 60)
@@ -104,10 +107,14 @@ class FaultInjector:
             else:
                 log.warning("Unknown fault type: %s", fault_type)
         except asyncio.CancelledError:
-            pass
+            log.info("Injection cancelled: %s:%s", source_id, tag)
         finally:
             # Restore original value (mark as no longer injected)
             self._twin.update(source_id, tag, current, injected=False)
+            # Remove this injection from active dict
+            if handle.fault_id in self._active:
+                del self._active[handle.fault_id]
+            log.info("Injection completed and cleaned up: %s", handle.fault_id)
 
     async def _spike(self, sid, tag, base, kw, dur):
         mag = kw.get("magnitude", base * 2.0)

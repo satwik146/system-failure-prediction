@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>IoT Failure Predictor</title>
+<title>System Failure Predictor</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -20,9 +20,14 @@
 html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:13px;font-weight:300}
 
-/* scanline overlay */
+/* scanline overlay & glowing aesthetic */
 body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
-  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.03) 3px,rgba(0,0,0,.03) 4px)}
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px);
+  opacity: 0.6;}
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
 
 /* ── HEADER ── */
 header{height:52px;display:flex;align-items:center;justify-content:space-between;
@@ -58,25 +63,28 @@ header{height:52px;display:flex;align-items:center;justify-content:space-between
   text-transform:uppercase;margin-bottom:8px}
 
 /* health ring */
-.ring-wrap{display:flex;flex-direction:column;align-items:center;padding:4px 0 8px}
-#health-svg{width:100px;height:100px}
-.hnum{font-family:var(--mono);font-size:28px;font-weight:600;
-  margin-top:-60px;text-align:center;position:relative;z-index:1}
-.hlabel{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:2px}
+.ring-wrap{display:flex;flex-direction:column;align-items:center;padding:12px 0;position:relative}
+#health-svg{width:120px;height:120px;filter:drop-shadow(0 0 10px rgba(0,214,143,0.3));transition:filter 0.5s ease;}
+.hnum{font-family:var(--mono);font-size:32px;font-weight:600;
+  margin-top:-76px;text-align:center;position:relative;z-index:1;text-shadow: 0 0 8px rgba(255,255,255,0.2);}
+.hlabel{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:14px;text-transform:uppercase;font-weight:500;}
 
 /* source list */
 .src-list{display:flex;flex-direction:column;gap:5px}
 .src-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
-  padding:8px 10px;cursor:pointer;transition:border-color .15s,background .15s}
-.src-item:hover{background:var(--bg3)}
-.src-item.active{border-color:var(--cyan);background:rgba(0,212,255,.05)}
-.src-item.anom{border-color:rgba(255,71,87,.5)}
+  padding:8px 10px;cursor:pointer;transition:all .2s ease;position:relative;overflow:hidden}
+.src-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:transparent;transition:background .3s}
+.src-item:hover{background:var(--bg3);transform:translateX(2px);box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+.src-item.active{border-color:rgba(0,212,255,0.4);background:rgba(0,212,255,.05);box-shadow: 0 0 15px rgba(0,212,255,0.05) inset;}
+.src-item.active::before{background:var(--cyan)}
+.src-item.anom{border-color:rgba(255,71,87,.6);background:rgba(255,71,87,.05);animation:pulse-bg 2s infinite}
+@keyframes pulse-bg{0%,100%{background:rgba(255,71,87,.05)}50%{background:rgba(255,71,87,.15)}}
 .src-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
-.src-name{font-family:var(--mono);font-size:11px;color:var(--cyan)}
-.sbadge{font-size:9px;padding:1px 6px;border-radius:3px;font-family:var(--mono)}
-.bok{background:rgba(0,214,143,.15);color:var(--green)}
-.bwarn{background:rgba(245,166,35,.15);color:var(--amber)}
-.bcrit{background:rgba(255,71,87,.15);color:var(--red)}
+.src-name{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing: 0.5px;}
+.sbadge{font-size:9px;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-weight:600}
+.bok{background:rgba(0,214,143,.15);color:var(--green);border:1px solid rgba(0,214,143,0.3)}
+.bwarn{background:rgba(245,166,35,.15);color:var(--amber);border:1px solid rgba(245,166,35,0.3)}
+.bcrit{background:rgba(255,71,87,.15);color:var(--red);border:1px solid rgba(255,71,87,0.3);box-shadow:0 0 8px rgba(255,71,87,0.4)}
 .src-bar-bg{height:3px;background:var(--border);border-radius:2px;margin-top:5px}
 .src-bar{height:3px;border-radius:2px;transition:width .5s ease,background .3s}
 .src-meta{font-size:10px;color:var(--muted);margin-top:3px}
@@ -138,14 +146,16 @@ header{height:52px;display:flex;align-items:center;justify-content:space-between
   text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 
 /* sim buttons */
-.scen-grid{display:grid;grid-template-columns:1fr;gap:5px;margin-bottom:8px}
-.sbtn{width:100%;padding:8px 10px;background:var(--bg2);border:1px solid var(--border2);
-  color:var(--text);font-family:var(--mono);font-size:10px;letter-spacing:.5px;
-  cursor:pointer;border-radius:var(--r);text-align:left;transition:all .15s;display:flex;align-items:center;gap:8px}
-.sbtn:hover{border-color:var(--cyan);background:rgba(0,212,255,.06);color:var(--cyan)}
-.sbtn.danger:hover{border-color:var(--red);color:var(--red);background:rgba(255,71,87,.06)}
-.sbtn .icon{font-size:12px;opacity:.7}
-.sbtn:active{transform:scale(.98)}
+.scen-grid{display:grid;grid-template-columns:1fr;gap:6px;margin-bottom:12px}
+.sbtn{width:100%;padding:10px;background:linear-gradient(180deg,var(--bg2),var(--bg1));border:1px solid var(--border2);
+  color:var(--text);font-family:var(--mono);font-size:10.5px;letter-spacing:.5px;
+  cursor:pointer;border-radius:var(--r);text-align:left;transition:all .2s cubic-bezier(0.4,0,0.2,1);display:flex;align-items:center;gap:10px;position:relative;overflow:hidden;}
+.sbtn::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.05),transparent);transform:translateX(-100%);transition:transform 0.4s}
+.sbtn:hover::after{transform:translateX(100%)}
+.sbtn:hover{border-color:var(--cyan);box-shadow:0 0 12px rgba(0,212,255,.15);color:var(--cyan);transform:translateY(-1px)}
+.sbtn.danger:hover{border-color:var(--red);color:var(--red);box-shadow:0 0 12px rgba(255,71,87,.2)}
+.sbtn .icon{font-size:14px;opacity:.9;filter:drop-shadow(0 0 4px rgba(255,255,255,0.2))}
+.sbtn:active{transform:scale(.97)}
 
 /* inject form */
 .inj-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px}
@@ -195,7 +205,7 @@ select:focus,input:focus{outline:none;border-color:var(--cyan)}
 <body>
 
 <header>
-  <div class="logo">IoT<em>//</em>Predictor</div>
+  <div class="logo">Failure<em>//</em>Predictor</div>
   <div class="hdr-mid">
     <div class="hdr-stat">
       <div class="v" id="kh" style="color:var(--green)">--</div>
@@ -228,10 +238,10 @@ select:focus,input:focus{outline:none;border-color:var(--cyan)}
     <div class="sec-label">System Integrity</div>
     <div class="ring-wrap">
       <svg id="health-svg" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r="42" fill="none" stroke="#1a2236" stroke-width="8"/>
-        <circle id="hcircle" cx="50" cy="50" r="42" fill="none" stroke="#00d68f" stroke-width="8"
+        <circle cx="50" cy="50" r="42" fill="none" stroke="#1a2236" stroke-width="6"/>
+        <circle id="hcircle" cx="50" cy="50" r="42" fill="none" stroke="#00d68f" stroke-width="6"
           stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="0"
-          transform="rotate(-90 50 50)" style="transition:all .8s ease"/>
+          transform="rotate(-90 50 50)" style="transition:all 1s cubic-bezier(0.1, 0.7, 0.1, 1)"/>
       </svg>
       <div class="hnum" id="hnum">--</div>
       <div class="hlabel">HEALTH SCORE</div>
@@ -295,6 +305,8 @@ select:focus,input:focus{outline:none;border-color:var(--cyan)}
       <button class="sbtn" onclick="runScen('motor_overheat')"><span class="icon">🔥</span>Motor Overheat</button>
       <button class="sbtn" onclick="runScen('memory_leak')"><span class="icon">💾</span>Memory Leak</button>
       <button class="sbtn" onclick="runScen('sensor_drift')"><span class="icon">📡</span>Sensor Drift</button>
+      <button class="sbtn" onclick="runScen('power_spike')"><span class="icon">⚡</span>Power Spike</button>
+      <button class="sbtn" onclick="runScen('network_partition')"><span class="icon">🔌</span>Network Drop</button>
     </div>
 
     <div style="margin:10px 0 5px;font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1.5px">MANUAL INJECT</div>
@@ -337,7 +349,11 @@ let selSrc = null, telBuf = {}, ws, ping, reconnectTimer;
 let prevHealth = null, prevAnomalies = 0;
 
 // ── Clock ──────────────────────────────────────────────────────────────────
-function tick_clock(){ document.getElementById('clock').textContent = new Date().toISOString().replace('T',' ').slice(0,19)+' UTC'; }
+function tick_clock(){ 
+  const now = new Date();
+  const time = now.toLocaleTimeString('en-US', {hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'});
+  document.getElementById('clock').textContent = time;
+}
 setInterval(tick_clock, 1000); tick_clock();
 
 // ── Toast ──────────────────────────────────────────────────────────────────
@@ -426,26 +442,33 @@ function handleTick(d){
   document.getElementById('bt').textContent = bs.total??'—';
   document.getElementById('bd').textContent = bs.dropped??'—';
 
+  // Simply show the system health value (100 while collecting data, then decreases with anomalies)
   setHealth(Math.round(d.system_health??100));
 
   // Build normalised source map from simulator.latest_states + predictions
   const states = d.simulator?.latest_states || {};
   const preds  = d.predictions || {};
   const sources = {};
+  
+  // Debug logging
+  if (Object.keys(preds).length > 0) {
+    console.log("Predictions received:", preds);
+  }
 
   for(const [sid, st] of Object.entries(states)){
     const metrics = st.metrics || {};
     const firstVal = Object.values(metrics)[0];
     const pred = preds[sid] || {};
-    // detect anomaly: any metric value that looks extreme vs a simple threshold
-    const isAnom = Object.values(metrics).some(v => Math.abs(v) > 900);
+    // rely primarily on backend predictions rather than a naive hardcoded UI threshold
+    const fallbackAnom = Object.values(metrics).some(v => Math.abs(v) > 5000); // Only flag ridiculous values
+    const isAnom = pred.is_anomaly ?? fallbackAnom;
     sources[sid] = {
       current_value: firstVal,
       current_tag:   Object.keys(metrics)[0] || '',
       metrics,
       health_score:  pred.health_score ?? (isAnom ? 20 : 90),
-      is_anomaly:    pred.is_anomaly   ?? isAnom,
-      anomaly_reason:pred.anomaly_reason ?? (isAnom ? 'extreme value' : ''),
+      is_anomaly:    isAnom,
+      anomaly_reason:pred.anomaly_reason ?? (isAnom ? 'extreme telemetry values' : ''),
       forecast:      pred.forecast     ?? [],
       minutes_to_event: pred.minutes_to_event ?? null,
       buffer_fill:   0,
@@ -470,7 +493,17 @@ function setHealth(h){
   const c = document.getElementById('hcircle');
   c.style.strokeDashoffset = CIRCUM*(1-h/100);
   c.style.stroke = h>60?'#00d68f':h>30?'#f5a623':'#ff4757';
-  if(prevHealth !== null && h < prevHealth - 15) toast(`Health dropped to ${h}`, 'warn');
+  
+  const svg = document.getElementById('health-svg');
+  if(h>60) svg.style.filter = 'drop-shadow(0 0 12px rgba(0,214,143,0.4))';
+  else if(h>30) svg.style.filter = 'drop-shadow(0 0 15px rgba(245,166,35,0.6))';
+  else svg.style.filter = 'drop-shadow(0 0 20px rgba(255,71,87,0.8))';
+
+  // Show toast for health changes
+  if(prevHealth !== null){
+    if(h < prevHealth - 10) toast(`⚠ Health dropped: ${prevHealth} → ${h}`, 'warn');
+    else if(h > prevHealth + 10) toast(`✓ Health improved: ${prevHealth} → ${h}`, 'ok');
+  }
   prevHealth = h;
 }
 
@@ -530,7 +563,12 @@ function updateFore(sources){
   const src = selSrc || Object.keys(sources)[0];
   if(!src || !sources[src]) return;
   const fc = sources[src].forecast || [];
-  if(!fc.length) return;
+  if(!fc.length){
+    foreC.data.labels = [];
+    foreC.data.datasets[0].data = [];
+    foreC.update('none');
+    return;
+  }
   const mean = fc.reduce((a,b)=>a+b,0)/fc.length;
   const std = Math.sqrt(fc.reduce((a,b)=>a+(b-mean)**2,0)/fc.length)||0;
   foreC.data.labels = fc.map((_,i)=>`+${(i+1)*10}m`);
@@ -539,7 +577,7 @@ function updateFore(sources){
   foreC.data.datasets[2].data = fc.map(v=>v+1.5*std);
   foreC.update('none');
   const eta = sources[src].minutes_to_event;
-  document.getElementById('chart-eta').textContent = eta ? `ETA ${eta} min` : '';
+  document.getElementById('chart-eta').textContent = eta ? `ETA ${eta} min (${fc.length} steps)` : `${fc.length} steps forecasted`;
 }
 
 function checkAnom(sources){

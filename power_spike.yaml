@@ -1,0 +1,18 @@
+name: power_spike
+description: "Simulates a sudden power surge affecting compressor and conveyor motors"
+
+steps:
+  - source_id: compressor_01
+    tag: current_draw_amps
+    fault_type: spike
+    magnitude: 150.0
+    duration: 5
+    delay_before: 0
+
+  - source_id: conveyor_01
+    tag: motor_rpm
+    fault_type: oscillate
+    magnitude: 300.0
+    frequency: 1.5
+    duration: 15
+    delay_before: 2
